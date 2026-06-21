@@ -1,0 +1,74 @@
+flowchart TD
+    A[Open E-Matelik] --> B[Login / Landing]
+    B --> C{Credentials Valid?}
+    C -- No --> D[Show Login Error]
+    D --> B
+    C -- Yes --> E{User Role}
+
+    E -- Pelapor --> P1[Dashboard Pelapor]
+    E -- Pekaseh --> K1[Dashboard Pekaseh]
+    E -- Admin --> A1[Dashboard Admin]
+
+    subgraph PELAPOR_FLOW [Pelapor Flow]
+        P1 --> P2{Pilih Aksi}
+        P2 -->|Buat Laporan| P3[Open Create Report]
+        P2 -->|Laporan Saya| P10[Open My Reports]
+        P2 -->|Peta| P14[Open Map]
+
+        P3 --> P4[Pilih Titik Lokasi]
+        P4 --> P5[Isi Judul, Kategori, Deskripsi]
+        P5 --> P6[Upload Bukti Awal]
+        P6 --> P7{Form Lengkap?}
+        P7 -- No --> P8[Show Validation Error]
+        P8 --> P3
+        P7 -- Yes --> P9[Submit Report]
+        P9 --> P11[Save Report + Initial Evidence + History]
+        P11 --> P12[Status Menunggu Verifikasi]
+        P12 --> P13[Open Report Detail]
+
+        P10 --> P13
+        P14 --> P13
+
+        P13 --> P15[View Status, Evidence, Resolution Note, History]
+    end
+
+    subgraph PEKASEH_FLOW [Pekaseh Flow]
+        K1 --> K2[View Pending + Backlog Over 24h]
+        K2 --> K3[Open Verification List]
+        K3 --> K4[Open Verification Detail]
+        K4 --> K5[Review Location, Evidence, Reporter Identity]
+        K5 --> K6{Choose Verdict}
+
+        K6 -->|Valid| K7[Set Diverifikasi]
+        K6 -->|Perlu Klarifikasi| K8[Set Perlu Klarifikasi]
+        K6 -->|Selesai Internal| K9[Set Selesai]
+        K6 -->|Eskalasi Administratif Lanjutan| K10[Set Diekskalasi]
+
+        K7 --> K11[Save Verification Note]
+        K8 --> K11
+        K9 --> K12[Optional Resolution Evidence]
+        K12 --> K11
+        K10 --> K11
+
+        K11 --> K13[Record History]
+        K13 --> K3
+    end
+
+    subgraph ADMIN_FLOW [Admin Flow]
+        A1 --> A2[View KPI Dashboard]
+        A2 --> A3[Open All Reports]
+        A3 --> A4[Filter Status Category Priority]
+        A4 --> A5[Open Report Detail]
+        A5 --> A6[Review Status Evidence History]
+        A6 --> A7{Update Status?}
+        A7 -- Yes --> A8[Choose New Status + Add Note]
+        A8 --> A9[Optional Resolution Note and Evidence]
+        A9 --> A10[Save Status Update]
+        A10 --> A11[Record History]
+        A11 --> A3
+        A7 -- No --> A3
+    end
+
+    X1[Pelapor Create Report] --> X2[Pekaseh Verify Report]
+    X2 --> X3[Admin Update Status]
+    X3 --> X4[Pelapor Track Progress]

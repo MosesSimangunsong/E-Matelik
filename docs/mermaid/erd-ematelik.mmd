@@ -1,0 +1,119 @@
+erDiagram
+    ROLES {
+        bigint id PK
+        varchar name
+        varchar slug
+        text description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    SUBAKS {
+        bigint id PK
+        varchar name
+        varchar region
+        varchar village
+        varchar district
+        text description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    USERS {
+        bigint id PK
+        bigint role_id FK
+        bigint subak_id FK
+        varchar name
+        varchar email
+        varchar password
+        varchar phone
+        boolean is_active
+        timestamp email_verified_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CATEGORIES {
+        bigint id PK
+        varchar name
+        varchar slug
+        text description
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    REPORT_STATUSES {
+        bigint id PK
+        varchar name
+        varchar slug
+        text description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    REPORTS {
+        bigint id PK
+        varchar report_code
+        bigint user_id FK
+        bigint subak_id FK
+        bigint category_id FK
+        bigint status_id FK
+        bigint verified_by FK
+        bigint resolved_by FK
+        varchar title
+        text description
+        decimal latitude
+        decimal longitude
+        text address_text
+        varchar priority_level
+        text verification_note
+        text resolution_note
+        timestamp verified_at
+        timestamp resolved_at
+        timestamp submitted_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    REPORT_PHOTOS {
+        bigint id PK
+        bigint report_id FK
+        varchar photo_path
+        varchar original_name
+        varchar mime_type
+        bigint file_size
+        varchar photo_role
+        varchar file_hash
+        varchar captured_from
+        bigint uploaded_by FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    REPORT_HISTORIES {
+        bigint id PK
+        bigint report_id FK
+        bigint user_id FK
+        bigint from_status_id FK
+        bigint to_status_id FK
+        varchar action
+        text note
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ROLES ||--o{ USERS : has
+    SUBAKS ||--o{ USERS : contains
+    SUBAKS ||--o{ REPORTS : owns
+    CATEGORIES ||--o{ REPORTS : classifies
+    REPORT_STATUSES ||--o{ REPORTS : current_status
+    USERS ||--o{ REPORTS : creates
+    USERS ||--o{ REPORTS : verifies
+    USERS ||--o{ REPORTS : resolves
+    REPORTS ||--o{ REPORT_PHOTOS : has
+    USERS ||--o{ REPORT_PHOTOS : uploads
+    REPORTS ||--o{ REPORT_HISTORIES : records
+    USERS ||--o{ REPORT_HISTORIES : performs
+    REPORT_STATUSES ||--o{ REPORT_HISTORIES : from_status
+    REPORT_STATUSES ||--o{ REPORT_HISTORIES : to_status
