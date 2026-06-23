@@ -28,12 +28,34 @@
         @apply scroll-smooth;
     }
 
+    html,
+    body,
+    #app {
+        @apply min-h-screen;
+    }
+
     body {
         @apply min-h-screen bg-neutral-50 font-sans text-neutral-900 antialiased;
         background-image:
             radial-gradient(circle at top left, rgba(79, 138, 63, 0.12), transparent 28%),
             radial-gradient(circle at right 20%, rgba(61, 139, 186, 0.12), transparent 24%),
             linear-gradient(180deg, #f8f7f2 0%, #f4f1e8 100%);
+    }
+
+    button,
+    [role='button'],
+    a,
+    input,
+    select,
+    textarea {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+        font-size: 16px;
     }
 
     h1,
@@ -55,6 +77,10 @@
         @apply min-h-screen text-neutral-900;
     }
 
+    .app-page {
+        @apply mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10;
+    }
+
     .app-panel {
         @apply rounded-card border border-neutral-200 bg-white/90 backdrop-blur;
         box-shadow: var(--shadow-soft);
@@ -74,7 +100,7 @@
     }
 
     .page-title {
-        @apply text-3xl font-bold tracking-tight text-neutral-900 md:text-[32px];
+        @apply text-[1.95rem] font-bold tracking-tight text-neutral-900 md:text-[2.2rem];
     }
 
     .section-title {
@@ -82,19 +108,19 @@
     }
 
     .body-copy {
-        @apply text-[15px] leading-7 text-neutral-700;
+        @apply text-base leading-7 text-neutral-700;
     }
 
     .btn-primary {
-        @apply inline-flex items-center justify-center rounded-soft border border-transparent bg-primary-500 px-5 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 active:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-40;
+        @apply inline-flex min-h-[3.25rem] items-center justify-center rounded-soft border border-transparent bg-primary-500 px-5 py-3.5 text-sm font-semibold text-white transition duration-200 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 active:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-40;
     }
 
     .btn-secondary {
-        @apply inline-flex items-center justify-center rounded-soft border border-secondary-200 bg-white px-5 py-3 text-sm font-semibold text-secondary-700 transition duration-200 hover:border-secondary-500 hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40;
+        @apply inline-flex min-h-[3.25rem] items-center justify-center rounded-soft border border-secondary-200 bg-white px-5 py-3.5 text-sm font-semibold text-secondary-700 transition duration-200 hover:border-secondary-500 hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40;
     }
 
     .btn-danger {
-        @apply inline-flex items-center justify-center rounded-soft border border-transparent bg-danger px-5 py-3 text-sm font-semibold text-white transition duration-200 hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-danger focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40;
+        @apply inline-flex min-h-[3.25rem] items-center justify-center rounded-soft border border-transparent bg-danger px-5 py-3.5 text-sm font-semibold text-white transition duration-200 hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-danger focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40;
     }
 
     .form-label {
@@ -102,7 +128,7 @@
     }
 
     .form-input {
-        @apply block w-full rounded-soft border-neutral-300 bg-white/95 px-4 py-3 text-sm text-neutral-900 shadow-sm transition duration-200 placeholder:text-neutral-500 focus:border-secondary-500 focus:ring-secondary-500;
+        @apply block min-h-[3.25rem] w-full rounded-soft border-neutral-300 bg-white/95 px-4 py-3.5 text-base text-neutral-900 shadow-sm transition duration-200 placeholder:text-neutral-500 focus:border-secondary-500 focus:ring-secondary-500;
     }
 
     .form-error {
@@ -110,7 +136,35 @@
     }
 
     .status-badge {
-        @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+        @apply inline-flex min-h-[2rem] items-center rounded-full px-3 py-1 text-xs font-semibold;
+    }
+
+    .info-strip {
+        @apply rounded-card border px-4 py-4 text-sm leading-7 sm:px-5;
+    }
+
+    .metric-card {
+        @apply app-card p-5;
+    }
+
+    .metric-label {
+        @apply text-sm font-medium text-neutral-500;
+    }
+
+    .metric-value {
+        @apply mt-2 text-3xl font-bold text-neutral-900;
+    }
+
+    .stack-list {
+        @apply space-y-4;
+    }
+
+    .report-list-card {
+        @apply rounded-card border border-neutral-200 bg-white p-4 shadow-panel sm:p-5;
+    }
+
+    .map-frame {
+        @apply overflow-hidden rounded-card border border-neutral-200 bg-white shadow-panel;
     }
 
     .data-table {
@@ -163,6 +217,16 @@
     .card-float:hover {
         transform: translateY(-4px);
         box-shadow: 0 18px 36px rgba(37, 36, 31, 0.12);
+    }
+}
+
+@layer utilities {
+    .safe-bottom {
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6rem);
+    }
+
+    .safe-nav {
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
     }
 }
 

@@ -39,43 +39,40 @@ export default function ReportsIndex({ reports, summary }) {
                         </p>
                     </div>
                     <Link href={route('reports.create')}>
-                        <PrimaryButton>Buat Laporan</PrimaryButton>
+                        <PrimaryButton className="w-full sm:w-auto">Buat Laporan</PrimaryButton>
                     </Link>
                 </div>
             }
         >
             <Head title="Laporan Saya" />
 
-            <div className="py-10">
-                <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <div className="app-page">
                     {flash.success && (
                         <div className="app-card border-emerald-200 bg-emerald-50 text-sm font-medium text-emerald-700">
                             {flash.success}
                         </div>
                     )}
 
-                    <section className="grid gap-4 md:grid-cols-4">
-                        <Card>
-                            <p className="text-sm text-neutral-500">Total laporan</p>
-                            <p className="mt-2 text-3xl font-bold text-neutral-900">{summary.total}</p>
+                    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        <Card className="metric-card">
+                            <p className="metric-label">Total laporan</p>
+                            <p className="metric-value">{summary.total}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Menunggu verifikasi</p>
-                            <p className="mt-2 text-3xl font-bold text-amber-600">{summary.pending}</p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Menunggu verifikasi</p>
+                            <p className="metric-value text-amber-600">{summary.pending}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Selesai</p>
-                            <p className="mt-2 text-3xl font-bold text-emerald-600">{summary.completed}</p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Selesai</p>
+                            <p className="metric-value text-emerald-600">{summary.completed}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Bukti lengkap</p>
-                            <p className="mt-2 text-3xl font-bold text-sky-700">
-                                {summary.withCompleteEvidence}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Bukti lengkap</p>
+                            <p className="metric-value text-sky-700">{summary.withCompleteEvidence}</p>
                         </Card>
                     </section>
 
-                    <section className="app-card border-sky-100 bg-sky-50/80 text-sm leading-7 text-sky-800">
+                    <section className="info-strip border-sky-100 bg-sky-50/80 text-sky-800">
                         Status sistem pada daftar ini adalah status administratif penanganan. Jika laporan
                         sudah selesai tetapi belum memiliki bukti penyelesaian, itu berarti closed-loop evidence
                         masih belum lengkap.
@@ -89,10 +86,7 @@ export default function ReportsIndex({ reports, summary }) {
                         {reports.length > 0 ? (
                             <div className="divide-y divide-neutral-200">
                                 {reports.map((report) => (
-                                    <div
-                                        key={report.id}
-                                        className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between"
-                                    >
+                                    <div key={report.id} className="report-list-card m-4 flex flex-col gap-4 md:m-5 md:flex-row md:items-center md:justify-between">
                                         <div className="space-y-2">
                                             <div className="flex flex-wrap items-center gap-3">
                                                 <p className="text-lg font-semibold text-neutral-900">
@@ -123,7 +117,7 @@ export default function ReportsIndex({ reports, summary }) {
                                         </div>
 
                                         <Link href={route('reports.show', report.id)}>
-                                            <SecondaryButton>Lihat Detail</SecondaryButton>
+                                            <SecondaryButton className="w-full sm:w-auto">Lihat Detail</SecondaryButton>
                                         </Link>
                                     </div>
                                 ))}
@@ -139,7 +133,7 @@ export default function ReportsIndex({ reports, summary }) {
                                 </p>
                                 <div className="mt-6">
                                     <Link href={route('reports.create')}>
-                                        <PrimaryButton>Buat Laporan Pertama</PrimaryButton>
+                                        <PrimaryButton className="w-full sm:w-auto">Buat Laporan Pertama</PrimaryButton>
                                     </Link>
                                 </div>
                             </div>
@@ -147,7 +141,7 @@ export default function ReportsIndex({ reports, summary }) {
                     </section>
 
                     <section className="space-y-4">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h3 className="section-title text-xl">Peta laporan saya</h3>
                                 <p className="mt-2 text-sm text-neutral-500">
@@ -166,7 +160,6 @@ export default function ReportsIndex({ reports, summary }) {
                             heightClass="h-[360px]"
                         />
                     </section>
-                </div>
             </div>
         </AuthenticatedLayout>
     );

@@ -15,12 +15,12 @@ export default function PelaporDashboard({ dashboard }) {
                         <p className="eyebrow !text-primary-600">Pelapor</p>
                         <h2 className="page-title">{dashboard.title}</h2>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row">
                         <Link href={route('reports.index')}>
-                            <SecondaryButton>Laporan Saya</SecondaryButton>
+                            <SecondaryButton className="w-full sm:w-auto">Laporan Saya</SecondaryButton>
                         </Link>
                         <Link href={route('reports.create')}>
-                            <PrimaryButton>Buat Laporan</PrimaryButton>
+                            <PrimaryButton className="w-full sm:w-auto">Buat Laporan</PrimaryButton>
                         </Link>
                     </div>
                 </div>
@@ -28,8 +28,7 @@ export default function PelaporDashboard({ dashboard }) {
         >
             <Head title={dashboard.title} />
 
-            <div className="py-10">
-                <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <div className="app-page">
                     <section className="app-panel overflow-hidden bg-gradient-to-br from-neutral-50 via-white to-emerald-50 p-8">
                         <div className="max-w-3xl space-y-4">
                             <p className="eyebrow">Pelaporan dan Tracking</p>
@@ -45,34 +44,26 @@ export default function PelaporDashboard({ dashboard }) {
                         </div>
                     </section>
 
-                    <section className="grid gap-4 md:grid-cols-4">
-                        <Card>
-                            <p className="text-sm text-neutral-500">Total laporan</p>
-                            <p className="mt-2 text-3xl font-bold text-neutral-900">
-                                {dashboard.stats.totalReports}
-                            </p>
+                    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        <Card className="metric-card">
+                            <p className="metric-label">Total laporan</p>
+                            <p className="metric-value">{dashboard.stats.totalReports}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Menunggu verifikasi</p>
-                            <p className="mt-2 text-3xl font-bold text-amber-600">
-                                {dashboard.stats.pendingReports}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Menunggu verifikasi</p>
+                            <p className="metric-value text-amber-600">{dashboard.stats.pendingReports}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Sudah selesai</p>
-                            <p className="mt-2 text-3xl font-bold text-emerald-600">
-                                {dashboard.stats.completedReports}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Sudah selesai</p>
+                            <p className="metric-value text-emerald-600">{dashboard.stats.completedReports}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Bukti lengkap</p>
-                            <p className="mt-2 text-3xl font-bold text-sky-700">
-                                {dashboard.stats.withCompleteEvidence}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Bukti lengkap</p>
+                            <p className="metric-value text-sky-700">{dashboard.stats.withCompleteEvidence}</p>
                         </Card>
                     </section>
 
-                    <section className="app-card border-sky-100 bg-sky-50/80 text-sm leading-7 text-sky-800">
+                    <section className="info-strip border-sky-100 bg-sky-50/80 text-sky-800">
                         Status yang tampil di sistem adalah status administratif proses penanganan
                         dan pelacakan, bukan keputusan sosial final. Nilai utamanya ada pada
                         keterlacakan bukti, verifikasi, dan update tindak lanjut.
@@ -87,7 +78,7 @@ export default function PelaporDashboard({ dashboard }) {
                                 {dashboard.recentReports.map((report) => (
                                     <div
                                         key={report.id}
-                                        className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between"
+                                        className="report-list-card m-4 flex flex-col gap-4 md:m-5 md:flex-row md:items-center md:justify-between"
                                     >
                                         <div className="space-y-2">
                                             <div className="flex flex-wrap items-center gap-3">
@@ -109,7 +100,7 @@ export default function PelaporDashboard({ dashboard }) {
                                             </div>
                                         </div>
                                         <Link href={route('reports.show', report.id)}>
-                                            <SecondaryButton>Lihat Detail</SecondaryButton>
+                                            <SecondaryButton className="w-full sm:w-auto">Lihat Detail</SecondaryButton>
                                         </Link>
                                     </div>
                                 ))}
@@ -120,7 +111,6 @@ export default function PelaporDashboard({ dashboard }) {
                             </div>
                         )}
                     </section>
-                </div>
             </div>
         </AuthenticatedLayout>
     );

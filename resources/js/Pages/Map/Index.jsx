@@ -25,14 +25,13 @@ export default function MapIndex({ mapReports, mapContext }) {
         >
             <Head title="Peta Insiden" />
 
-            <div className="py-10">
-                <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <div className="app-page">
                     <div className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
                         <LeafletMap
                             markers={mapReports}
                             center={defaultCenter(mapReports)}
                             zoom={13}
-                            heightClass="h-[560px]"
+                            heightClass="h-[420px] sm:h-[520px] lg:h-[560px]"
                         />
 
                         <div className="space-y-4">
@@ -66,7 +65,7 @@ export default function MapIndex({ mapReports, mapContext }) {
                                         {mapReports.map((report) => (
                                             <div
                                                 key={report.id}
-                                                className="rounded-soft border border-neutral-200 bg-neutral-50 px-4 py-3"
+                                                className="rounded-soft border border-neutral-200 bg-neutral-50 px-4 py-4"
                                             >
                                                 <div className="flex items-start justify-between gap-3">
                                                     <div>
@@ -122,7 +121,6 @@ export default function MapIndex({ mapReports, mapContext }) {
                             </Card>
                         </div>
                     </div>
-                </div>
             </div>
         </AuthenticatedLayout>
     );

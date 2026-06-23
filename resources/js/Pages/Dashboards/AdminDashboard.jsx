@@ -15,12 +15,12 @@ export default function AdminDashboard({ dashboard }) {
                         <p className="eyebrow !text-amber-700">Admin</p>
                         <h2 className="page-title">{dashboard.title}</h2>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row">
                         <Link href={route('admin.users.index')}>
-                            <SecondaryButton>Kelola User</SecondaryButton>
+                            <SecondaryButton className="w-full sm:w-auto">Kelola User</SecondaryButton>
                         </Link>
                         <Link href={route('admin.reports.index')}>
-                            <PrimaryButton>Semua Laporan</PrimaryButton>
+                            <PrimaryButton className="w-full sm:w-auto">Semua Laporan</PrimaryButton>
                         </Link>
                     </div>
                 </div>
@@ -28,8 +28,7 @@ export default function AdminDashboard({ dashboard }) {
         >
             <Head title={dashboard.title} />
 
-            <div className="py-10">
-                <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <div className="app-page">
                     <section className="app-panel overflow-hidden bg-gradient-to-br from-neutral-50 via-white to-amber-50 p-8">
                         <div className="max-w-3xl space-y-4">
                             <p className="eyebrow !text-amber-700">Monitoring Proses</p>
@@ -45,40 +44,30 @@ export default function AdminDashboard({ dashboard }) {
                         </div>
                     </section>
 
-                    <section className="grid gap-4 md:grid-cols-5">
-                        <Card>
-                            <p className="text-sm text-neutral-500">Total laporan</p>
-                            <p className="mt-2 text-3xl font-bold text-neutral-900">
-                                {dashboard.stats.totalReports}
-                            </p>
+                    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                        <Card className="metric-card">
+                            <p className="metric-label">Total laporan</p>
+                            <p className="metric-value">{dashboard.stats.totalReports}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Menunggu verifikasi</p>
-                            <p className="mt-2 text-3xl font-bold text-amber-600">
-                                {dashboard.stats.pendingReports}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Menunggu verifikasi</p>
+                            <p className="metric-value text-amber-600">{dashboard.stats.pendingReports}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Diverifikasi</p>
-                            <p className="mt-2 text-3xl font-bold text-sky-700">
-                                {dashboard.stats.verifiedReports}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Diverifikasi</p>
+                            <p className="metric-value text-sky-700">{dashboard.stats.verifiedReports}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Selesai</p>
-                            <p className="mt-2 text-3xl font-bold text-emerald-600">
-                                {dashboard.stats.resolvedReports}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Selesai</p>
+                            <p className="metric-value text-emerald-600">{dashboard.stats.resolvedReports}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Bukti lengkap</p>
-                            <p className="mt-2 text-3xl font-bold text-rose-700">
-                                {dashboard.stats.withCompleteEvidence}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Bukti lengkap</p>
+                            <p className="metric-value text-rose-700">{dashboard.stats.withCompleteEvidence}</p>
                         </Card>
                     </section>
 
-                    <section className="app-card border-amber-100 bg-amber-50/80 text-sm leading-7 text-amber-900">
+                    <section className="info-strip border-amber-100 bg-amber-50/80 text-amber-900">
                         Status sistem adalah status administratif penanganan dan tracking. Dashboard ini
                         diposisikan untuk akuntabilitas proses, bukan untuk mengklaim penyelesaian sosial
                         otomatis.
@@ -91,10 +80,7 @@ export default function AdminDashboard({ dashboard }) {
                         {dashboard.recentReports.length > 0 ? (
                             <div className="divide-y divide-neutral-200">
                                 {dashboard.recentReports.map((report) => (
-                                    <div
-                                        key={report.id}
-                                        className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between"
-                                    >
+                                    <div key={report.id} className="report-list-card m-4 flex flex-col gap-4 md:m-5 md:flex-row md:items-center md:justify-between">
                                         <div className="space-y-2">
                                             <div className="flex flex-wrap items-center gap-3">
                                                 <p className="text-lg font-semibold text-neutral-900">
@@ -118,7 +104,7 @@ export default function AdminDashboard({ dashboard }) {
                                             </div>
                                         </div>
                                         <Link href={route('admin.reports.show', report.id)}>
-                                            <SecondaryButton>Lihat Detail</SecondaryButton>
+                                            <SecondaryButton className="w-full sm:w-auto">Lihat Detail</SecondaryButton>
                                         </Link>
                                     </div>
                                 ))}
@@ -129,7 +115,6 @@ export default function AdminDashboard({ dashboard }) {
                             </div>
                         )}
                     </section>
-                </div>
             </div>
         </AuthenticatedLayout>
     );

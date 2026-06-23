@@ -20,7 +20,7 @@ export default function AuthenticatedLayout({ header, children }) {
               ? [
                     { label: 'Dashboard', href: route('pekaseh.dashboard'), active: route().current('pekaseh.dashboard') },
                     {
-                        label: 'Verifikasi Laporan',
+                        label: 'Verifikasi',
                         href: route('verification.index'),
                         active: route().current('verification.index') || route().current('verification.show'),
                     },
@@ -67,33 +67,34 @@ export default function AuthenticatedLayout({ header, children }) {
             : roleSlug === 'pekaseh'
               ? route('pekaseh.dashboard')
               : route('pelapor.dashboard');
+    const mobileMenuItems = menuItems.slice(0, 4);
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
     return (
         <div className="app-shell">
-            <nav className="sticky top-0 z-30 border-b border-neutral-200 bg-white/85 backdrop-blur">
+            <nav className="sticky top-0 z-30 border-b border-neutral-200 bg-white/90 backdrop-blur">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 justify-between">
-                        <div className="flex">
+                    <div className="flex min-h-[4.75rem] items-center justify-between gap-3 py-3">
+                        <div className="flex min-w-0 items-center gap-3">
                             <div className="flex shrink-0 items-center">
                                 <Link href={dashboardHref} className="flex items-center gap-3">
                                     <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-500 text-white shadow-panel">
                                         <ApplicationLogo className="block h-6 w-6 fill-current" />
                                     </span>
-                                    <div className="hidden sm:block">
+                                    <div className="min-w-0">
                                         <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary-600">
                                             E-Matelik
                                         </p>
-                                        <p className="text-xs text-neutral-500">
+                                        <p className="max-w-[11rem] truncate text-sm text-neutral-500 sm:max-w-none">
                                             {user.role?.name ?? 'Pengguna'}
                                         </p>
                                     </div>
                                 </Link>
                             </div>
 
-                            <div className="hidden items-center space-x-3 sm:ms-10 sm:flex">
+                            <div className="hidden items-center space-x-3 lg:ms-8 lg:flex">
                                 {menuItems.map((item) => (
                                     <NavLink
                                         key={item.label}
@@ -113,7 +114,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         <span className="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center rounded-full border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-semibold leading-4 text-neutral-700 transition duration-150 ease-in-out hover:border-neutral-300 hover:bg-white focus:outline-none"
+                                                className="inline-flex min-h-[3rem] items-center rounded-full border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-semibold leading-4 text-neutral-700 transition duration-150 ease-in-out hover:border-neutral-300 hover:bg-white focus:outline-none"
                                             >
                                                 {user.name}
                                                 {user.role?.name ? ` (${user.role.name})` : ''}
@@ -152,14 +153,14 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                         </div>
 
-                        <div className="-me-2 flex items-center sm:hidden">
+                        <div className="-me-2 flex items-center lg:hidden">
                             <button
                                 onClick={() =>
                                     setShowingNavigationDropdown(
                                         (previousState) => !previousState,
                                     )
                                 }
-                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
+                                className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-neutral-200 bg-white text-neutral-500 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
                             >
                                 <svg
                                     className="h-6 w-6"
@@ -198,10 +199,10 @@ export default function AuthenticatedLayout({ header, children }) {
                 <div
                     className={
                         (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden'
+                        ' lg:hidden'
                     }
                 >
-                    <div className="space-y-1 pb-3 pt-2">
+                    <div className="space-y-2 px-4 pb-4 pt-2">
                         {menuItems.map((item) => (
                             <ResponsiveNavLink
                                 key={item.label}
@@ -213,7 +214,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         ))}
                     </div>
 
-                    <div className="border-t border-neutral-200 pb-1 pt-4">
+                    <div className="border-t border-neutral-200 pb-4 pt-4">
                         <div className="px-4">
                             <div className="text-base font-semibold text-neutral-900">
                                 {user.name}
@@ -225,14 +226,14 @@ export default function AuthenticatedLayout({ header, children }) {
 
                         <div className="mt-3 space-y-1">
                             <ResponsiveNavLink href={route('profile.edit')}>
-                                Profile
+                                Profil
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 method="post"
                                 href={route('logout')}
                                 as="button"
                             >
-                                Log Out
+                                Keluar
                             </ResponsiveNavLink>
                         </div>
                     </div>
@@ -247,7 +248,25 @@ export default function AuthenticatedLayout({ header, children }) {
                 </header>
             )}
 
-            <main className="pb-12">{children}</main>
+            <main className="safe-bottom pb-8">{children}</main>
+
+            <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white/95 px-3 pt-2 backdrop-blur lg:hidden">
+                <div className="safe-nav grid grid-cols-4 gap-2">
+                    {mobileMenuItems.map((item) => (
+                        <Link
+                            key={item.label}
+                            href={item.href}
+                            className={`flex min-h-[3.5rem] flex-col items-center justify-center rounded-2xl px-2 text-center text-[11px] font-semibold leading-4 transition ${
+                                item.active
+                                    ? 'bg-primary-500 text-white shadow-panel'
+                                    : 'text-neutral-600'
+                            }`}
+                        >
+                            <span>{item.label}</span>
+                        </Link>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }

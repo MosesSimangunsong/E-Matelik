@@ -14,12 +14,12 @@ export default function PekasehDashboard({ dashboard }) {
                         <p className="eyebrow !text-secondary-600">Pekaseh</p>
                         <h2 className="page-title">{dashboard.title}</h2>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row">
                         <Link href={route('map.index')}>
-                            <SecondaryButton>Peta</SecondaryButton>
+                            <SecondaryButton className="w-full sm:w-auto">Peta</SecondaryButton>
                         </Link>
                         <Link href={route('verification.index')}>
-                            <PrimaryButton>Verifikasi Laporan</PrimaryButton>
+                            <PrimaryButton className="w-full sm:w-auto">Verifikasi Laporan</PrimaryButton>
                         </Link>
                     </div>
                 </div>
@@ -27,8 +27,7 @@ export default function PekasehDashboard({ dashboard }) {
         >
             <Head title={dashboard.title} />
 
-            <div className="py-10">
-                <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <div className="app-page">
                     <section className="app-panel overflow-hidden bg-gradient-to-br from-neutral-50 via-white to-sky-50 p-8">
                         <div className="max-w-3xl space-y-4">
                             <p className="eyebrow !text-primary-600">
@@ -49,34 +48,26 @@ export default function PekasehDashboard({ dashboard }) {
                         </div>
                     </section>
 
-                    <section className="grid gap-4 md:grid-cols-4">
-                        <Card>
-                            <p className="text-sm text-neutral-500">Subak aktif</p>
-                            <p className="mt-2 text-lg font-semibold text-neutral-900">
-                                {dashboard.subak?.name ?? 'Belum ditetapkan'}
-                            </p>
+                    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        <Card className="metric-card">
+                            <p className="metric-label">Subak aktif</p>
+                            <p className="mt-2 text-xl font-bold text-neutral-900">{dashboard.subak?.name ?? 'Belum ditetapkan'}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Menunggu verifikasi</p>
-                            <p className="mt-2 text-lg font-semibold text-neutral-900">
-                                {dashboard.stats.pendingReports}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Menunggu verifikasi</p>
+                            <p className="metric-value">{dashboard.stats.pendingReports}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Backlog lewat 24 jam</p>
-                            <p className="mt-2 text-lg font-semibold text-rose-600">
-                                {dashboard.stats.overdueReports}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Backlog lewat 24 jam</p>
+                            <p className="metric-value text-rose-600">{dashboard.stats.overdueReports}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Region</p>
-                            <p className="mt-2 text-lg font-semibold text-neutral-900">
-                                {dashboard.subak?.region ?? '-'}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Region</p>
+                            <p className="mt-2 text-xl font-bold text-neutral-900">{dashboard.subak?.region ?? '-'}</p>
                         </Card>
                     </section>
 
-                    <section className="app-card border-secondary-100 bg-secondary-50/80 text-sm leading-7 text-secondary-800">
+                    <section className="info-strip border-secondary-100 bg-secondary-50/80 text-secondary-800">
                         <p className="font-semibold">{dashboard.processGuidance.headline}</p>
                         <p className="mt-2">{dashboard.processGuidance.fallbackNote}</p>
                     </section>
@@ -88,10 +79,7 @@ export default function PekasehDashboard({ dashboard }) {
                         {dashboard.recentReports.length > 0 ? (
                             <div className="divide-y divide-neutral-200">
                                 {dashboard.recentReports.map((report) => (
-                                    <div
-                                        key={report.id}
-                                        className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between"
-                                    >
+                                    <div key={report.id} className="report-list-card m-4 flex flex-col gap-4 md:m-5 md:flex-row md:items-center md:justify-between">
                                         <div>
                                             <p className="text-lg font-semibold text-neutral-900">
                                                 {report.title}
@@ -107,7 +95,7 @@ export default function PekasehDashboard({ dashboard }) {
                                             </div>
                                         </div>
                                         <Link href={route('verification.show', report.id)}>
-                                            <SecondaryButton>Tinjau Detail</SecondaryButton>
+                                            <SecondaryButton className="w-full sm:w-auto">Tinjau Detail</SecondaryButton>
                                         </Link>
                                     </div>
                                 ))}
@@ -118,7 +106,6 @@ export default function PekasehDashboard({ dashboard }) {
                             </div>
                         )}
                     </section>
-                </div>
             </div>
         </AuthenticatedLayout>
     );

@@ -35,8 +35,8 @@ export default function Login({ status, canResetPassword }) {
                 <p className="eyebrow">Masuk ke sistem</p>
                 <h1 className="page-title">Akses dashboard E-Matelik</h1>
                 <p className="body-copy">
-                    Gunakan akun Anda untuk membuka alur pelaporan, verifikasi, dan pemantauan
-                    sesuai peran di sistem.
+                    Gunakan akun Anda untuk membuka pelaporan, verifikasi, dan pemantauan sesuai
+                    peran. Form ini dibuat lebih lega agar nyaman diisi dari HP.
                 </p>
             </div>
 
@@ -106,6 +106,11 @@ export default function Login({ status, canResetPassword }) {
                     </div>
                 </div>
             </form>
+
+            <div className="mt-6 rounded-card border border-neutral-200 bg-neutral-50 px-4 py-4 text-sm leading-7 text-neutral-600">
+                Gunakan email dan password yang terdaftar. Jika Anda pengguna lapangan, akun tetap
+                bisa dipakai dengan nyaman dari layar HP maupun tablet.
+            </div>
         </GuestLayout>
     );
 }

@@ -42,26 +42,23 @@ export default function AdminReportsIndex({ reports, filters, filterOptions, sum
         >
             <Head title="Semua Laporan" />
 
-            <div className="py-10">
-                <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-                    <section className="grid gap-4 md:grid-cols-3">
-                        <Card>
-                            <p className="text-sm text-neutral-500">Total terlihat</p>
-                            <p className="mt-2 text-3xl font-bold text-neutral-900">{summary.total}</p>
+            <div className="app-page">
+                    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                        <Card className="metric-card">
+                            <p className="metric-label">Total terlihat</p>
+                            <p className="metric-value">{summary.total}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Butuh perhatian</p>
-                            <p className="mt-2 text-3xl font-bold text-amber-600">{summary.attention}</p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Butuh perhatian</p>
+                            <p className="metric-value text-amber-600">{summary.attention}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Bukti lengkap</p>
-                            <p className="mt-2 text-3xl font-bold text-emerald-600">
-                                {summary.withCompleteEvidence}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Bukti lengkap</p>
+                            <p className="metric-value text-emerald-600">{summary.withCompleteEvidence}</p>
                         </Card>
                     </section>
 
-                    <section className="grid gap-4 md:grid-cols-3">
+                    <section className="grid gap-4 lg:grid-cols-3">
                         <Card>
                             <label className="form-label">Status</label>
                             <select
@@ -116,10 +113,7 @@ export default function AdminReportsIndex({ reports, filters, filterOptions, sum
                         {reports.length > 0 ? (
                             <div className="divide-y divide-neutral-200">
                                 {reports.map((report) => (
-                                    <div
-                                        key={report.id}
-                                        className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between"
-                                    >
+                                    <div key={report.id} className="report-list-card m-4 flex flex-col gap-4 md:m-5 md:flex-row md:items-center md:justify-between">
                                         <div className="space-y-2">
                                             <div className="flex flex-wrap items-center gap-3">
                                                 <p className="text-lg font-semibold text-neutral-900">
@@ -146,7 +140,7 @@ export default function AdminReportsIndex({ reports, filters, filterOptions, sum
                                             </div>
                                         </div>
                                         <Link href={route('admin.reports.show', report.id)}>
-                                            <SecondaryButton>Lihat Detail</SecondaryButton>
+                                            <SecondaryButton className="w-full sm:w-auto">Lihat Detail</SecondaryButton>
                                         </Link>
                                     </div>
                                 ))}
@@ -172,7 +166,6 @@ export default function AdminReportsIndex({ reports, filters, filterOptions, sum
                             heightClass="h-[360px]"
                         />
                     </section>
-                </div>
             </div>
         </AuthenticatedLayout>
     );

@@ -85,7 +85,12 @@ export default function LeafletMap({
         : fallbackCenter;
 
     return (
-        <div className={`overflow-hidden rounded-card border border-neutral-200 bg-white shadow-panel ${className}`}>
+        <div className={`map-frame ${className}`}>
+            {selectable && (
+                <div className="border-b border-neutral-200 bg-neutral-50 px-4 py-3 text-sm leading-6 text-neutral-600">
+                    Ketuk peta untuk memilih titik laporan. Geser dua jari bila ingin memindahkan peta dengan lebih stabil.
+                </div>
+            )}
             <MapContainer
                 center={selectedCenter}
                 zoom={zoom}

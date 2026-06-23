@@ -55,22 +55,21 @@ export default function AdminReportShow({ report, statusOptions }) {
                         </div>
                     </div>
                     <Link href={route('admin.reports.index')}>
-                        <SecondaryButton>Kembali ke Semua Laporan</SecondaryButton>
+                        <SecondaryButton className="w-full sm:w-auto">Kembali ke Semua Laporan</SecondaryButton>
                     </Link>
                 </div>
             }
         >
             <Head title={`Admin ${report.report_code}`} />
 
-            <div className="py-10">
-                <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <div className="app-page">
                     {flash.success && (
                         <div className="app-card border-emerald-200 bg-emerald-50 text-sm font-medium text-emerald-700">
                             {flash.success}
                         </div>
                     )}
 
-                    <section className="app-card border-amber-100 bg-amber-50/80 text-sm leading-7 text-amber-900">
+                    <section className="info-strip border-amber-100 bg-amber-50/80 text-amber-900">
                         {report.status_context}
                     </section>
 
@@ -147,7 +146,7 @@ export default function AdminReportShow({ report, statusOptions }) {
                                 </div>
                             </Card>
 
-                            <form onSubmit={submit} className="app-panel space-y-5 p-6">
+                            <form onSubmit={submit} className="app-panel space-y-5 p-5 sm:p-6">
                                 <div>
                                     <p className="eyebrow">Update Status</p>
                                     <h3 className="mt-2 text-xl font-semibold text-neutral-900">
@@ -202,9 +201,14 @@ export default function AdminReportShow({ report, statusOptions }) {
                                         type="file"
                                         multiple
                                         accept="image/*"
-                                        className="mt-2 block w-full rounded-soft border border-dashed border-neutral-300 bg-neutral-50 px-4 py-4 text-sm text-neutral-600 file:mr-4 file:rounded-full file:border-0 file:bg-amber-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                                        className="mt-2 block w-full rounded-soft border border-dashed border-neutral-300 bg-neutral-50 px-4 py-4 text-sm text-neutral-600 file:mr-4 file:rounded-full file:border-0 file:bg-amber-600 file:px-4 file:py-3 file:text-sm file:font-semibold file:text-white"
                                         onChange={(e) => setData('resolution_photos', Array.from(e.target.files ?? []))}
                                     />
+                                    {data.resolution_photos.length > 0 && (
+                                        <p className="mt-2 text-sm text-neutral-500">
+                                            {data.resolution_photos.length} foto penyelesaian dipilih.
+                                        </p>
+                                    )}
                                     <InputError className="mt-2" message={errors.resolution_photos} />
                                     <InputError className="mt-2" message={errors['resolution_photos.0']} />
                                 </div>
@@ -214,7 +218,7 @@ export default function AdminReportShow({ report, statusOptions }) {
                                     penyelesaian agar closed-loop reporting tetap kuat.
                                 </div>
                                 <div className="flex justify-end">
-                                    <PrimaryButton disabled={processing}>
+                                    <PrimaryButton disabled={processing} className="w-full sm:w-auto">
                                         {processing ? 'Menyimpan...' : 'Update Status'}
                                     </PrimaryButton>
                                 </div>
@@ -255,7 +259,6 @@ export default function AdminReportShow({ report, statusOptions }) {
                             rows={report.history}
                         />
                     </section>
-                </div>
             </div>
         </AuthenticatedLayout>
     );

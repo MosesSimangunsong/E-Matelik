@@ -50,21 +50,25 @@ export default function ReportsCreate({ categories, subaks, reportDefaults }) {
                         </p>
                     </div>
                     <Link href={route('reports.index')}>
-                        <SecondaryButton>Kembali ke Laporan Saya</SecondaryButton>
+                        <SecondaryButton className="w-full sm:w-auto">Kembali ke Laporan Saya</SecondaryButton>
                     </Link>
                 </div>
             }
         >
             <Head title="Buat Laporan" />
 
-            <div className="py-10">
-                <div className="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8">
-                    <form onSubmit={submit} className="app-panel space-y-6 p-6">
+            <div className="app-page">
+                <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+                    <form onSubmit={submit} className="app-panel space-y-6 p-5 sm:p-6">
+                        <div className="rounded-card border border-primary-100 bg-primary-50 px-4 py-4 text-sm leading-7 text-primary-700">
+                            Isi bagian yang paling penting dulu: pilih titik, isi judul singkat, pilih kategori, lalu unggah foto. Form dibuat lebih lega agar nyaman diisi dari HP.
+                        </div>
+
                         <div className="space-y-4">
                             <div>
                                 <p className="eyebrow">Pilih titik insiden</p>
                                 <h3 className="mt-2 text-xl font-semibold text-neutral-900">
-                                    Klik peta untuk mengisi koordinat otomatis
+                                    Ketuk peta untuk mengisi koordinat otomatis
                                 </h3>
                             </div>
                             <LeafletMap
@@ -86,7 +90,7 @@ export default function ReportsCreate({ categories, subaks, reportDefaults }) {
                             </div>
                         </div>
 
-                        <div className="grid gap-6 md:grid-cols-2">
+                        <div className="grid gap-5 md:grid-cols-2">
                             <div className="md:col-span-2">
                                 <InputLabel htmlFor="title" value="Judul Laporan" />
                                 <TextInput
@@ -169,7 +173,7 @@ export default function ReportsCreate({ categories, subaks, reportDefaults }) {
                                 <InputLabel htmlFor="address_text" value="Keterangan Lokasi" />
                                 <textarea
                                     id="address_text"
-                                    className="form-input mt-2 min-h-28"
+                                    className="form-input mt-2 min-h-32"
                                     value={data.address_text}
                                     onChange={(e) => setData('address_text', e.target.value)}
                                     placeholder="Tambahkan penanda lokasi singkat, misalnya dekat jembatan kecil atau saluran utama."
@@ -196,9 +200,14 @@ export default function ReportsCreate({ categories, subaks, reportDefaults }) {
                                     type="file"
                                     multiple
                                     accept="image/*"
-                                    className="mt-2 block w-full rounded-soft border border-dashed border-neutral-300 bg-neutral-50 px-4 py-4 text-sm text-neutral-600 file:mr-4 file:rounded-full file:border-0 file:bg-primary-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                                    className="mt-2 block w-full rounded-soft border border-dashed border-neutral-300 bg-neutral-50 px-4 py-4 text-sm text-neutral-600 file:mr-4 file:rounded-full file:border-0 file:bg-primary-500 file:px-4 file:py-3 file:text-sm file:font-semibold file:text-white"
                                     onChange={(e) => setData('photos', Array.from(e.target.files ?? []))}
                                 />
+                                {data.photos.length > 0 && (
+                                    <p className="mt-2 text-sm text-neutral-500">
+                                        {data.photos.length} foto dipilih.
+                                    </p>
+                                )}
                                 <InputError className="mt-2" message={errors.photos} />
                                 <InputError className="mt-2" message={errors['photos.0']} />
                             </div>
@@ -206,9 +215,9 @@ export default function ReportsCreate({ categories, subaks, reportDefaults }) {
 
                         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                             <Link href={route('reports.index')}>
-                                <SecondaryButton type="button">Batal</SecondaryButton>
+                                <SecondaryButton type="button" className="w-full sm:w-auto">Batal</SecondaryButton>
                             </Link>
-                            <PrimaryButton disabled={processing}>
+                            <PrimaryButton disabled={processing} className="w-full sm:w-auto">
                                 {processing ? 'Mengirim...' : 'Kirim Laporan'}
                             </PrimaryButton>
                         </div>
@@ -235,6 +244,17 @@ export default function ReportsCreate({ categories, subaks, reportDefaults }) {
                                 <li>Minimal satu foto bukti terunggah.</li>
                             </ul>
                         </div>
+
+                        {(data.latitude || data.longitude) && (
+                            <div className="app-card">
+                                <h3 className="text-lg font-semibold text-neutral-900">Titik yang dipilih</h3>
+                                <p className="mt-3 text-sm leading-7 text-neutral-600">
+                                    Latitude: {data.latitude || '-'}
+                                    <br />
+                                    Longitude: {data.longitude || '-'}
+                                </p>
+                            </div>
+                        )}
                     </aside>
                 </div>
             </div>

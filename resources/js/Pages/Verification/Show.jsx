@@ -53,16 +53,15 @@ export default function VerificationShow({ report, verdictOptions, verificationG
                         </div>
                     </div>
                     <Link href={route('verification.index')}>
-                        <SecondaryButton>Kembali ke Daftar Verifikasi</SecondaryButton>
+                        <SecondaryButton className="w-full sm:w-auto">Kembali ke Daftar Verifikasi</SecondaryButton>
                     </Link>
                 </div>
             }
         >
             <Head title={`Verifikasi ${report.report_code}`} />
 
-            <div className="py-10">
-                <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-                    <section className="app-card border-secondary-100 bg-secondary-50/80 text-sm leading-7 text-secondary-800">
+            <div className="app-page">
+                    <section className="info-strip border-secondary-100 bg-secondary-50/80 text-secondary-800">
                         {report.status_context}
                     </section>
 
@@ -166,7 +165,7 @@ export default function VerificationShow({ report, verdictOptions, verificationG
                                 </div>
                             </Card>
 
-                            <form onSubmit={submit} className="app-panel space-y-5 p-6">
+                            <form onSubmit={submit} className="app-panel space-y-5 p-5 sm:p-6">
                                 <div>
                                     <p className="eyebrow">Keputusan Pekaseh</p>
                                     <h3 className="mt-2 text-xl font-semibold text-neutral-900">
@@ -217,9 +216,14 @@ export default function VerificationShow({ report, verdictOptions, verificationG
                                         type="file"
                                         multiple
                                         accept="image/*"
-                                        className="mt-2 block w-full rounded-soft border border-dashed border-neutral-300 bg-neutral-50 px-4 py-4 text-sm text-neutral-600 file:mr-4 file:rounded-full file:border-0 file:bg-secondary-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                                        className="mt-2 block w-full rounded-soft border border-dashed border-neutral-300 bg-neutral-50 px-4 py-4 text-sm text-neutral-600 file:mr-4 file:rounded-full file:border-0 file:bg-secondary-600 file:px-4 file:py-3 file:text-sm file:font-semibold file:text-white"
                                         onChange={(e) => setData('resolution_photos', Array.from(e.target.files ?? []))}
                                     />
+                                    {data.resolution_photos.length > 0 && (
+                                        <p className="mt-2 text-sm text-neutral-500">
+                                            {data.resolution_photos.length} foto penyelesaian dipilih.
+                                        </p>
+                                    )}
                                     <InputError className="mt-2" message={errors.resolution_photos} />
                                     <InputError className="mt-2" message={errors['resolution_photos.0']} />
                                 </div>
@@ -235,7 +239,7 @@ export default function VerificationShow({ report, verdictOptions, verificationG
                                 </div>
 
                                 <div className="flex justify-end">
-                                    <PrimaryButton disabled={processing}>
+                                    <PrimaryButton disabled={processing} className="w-full sm:w-auto">
                                         {processing ? 'Menyimpan...' : 'Simpan Keputusan'}
                                     </PrimaryButton>
                                 </div>
@@ -277,7 +281,6 @@ export default function VerificationShow({ report, verdictOptions, verificationG
                             emptyText="Belum ada histori aktivitas."
                         />
                     </section>
-                </div>
             </div>
         </AuthenticatedLayout>
     );

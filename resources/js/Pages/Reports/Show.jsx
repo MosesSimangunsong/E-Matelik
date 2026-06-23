@@ -37,12 +37,12 @@ export default function ReportsShow({ report }) {
                         </div>
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row">
                         <Link href={route('reports.index')}>
-                            <SecondaryButton>Kembali</SecondaryButton>
+                            <SecondaryButton className="w-full sm:w-auto">Kembali</SecondaryButton>
                         </Link>
                         <Link href={route('reports.create')}>
-                            <SecondaryButton>Buat Laporan Baru</SecondaryButton>
+                            <SecondaryButton className="w-full sm:w-auto">Buat Laporan Baru</SecondaryButton>
                         </Link>
                     </div>
                 </div>
@@ -50,14 +50,32 @@ export default function ReportsShow({ report }) {
         >
             <Head title={report.title} />
 
-            <div className="py-10">
-                <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-                    <section className="app-card border-sky-100 bg-sky-50/80 text-sm leading-7 text-sky-800">
+            <div className="app-page">
+                    <section className="info-strip border-sky-100 bg-sky-50/80 text-sky-800">
                         {report.status_context}
                     </section>
 
                     <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
                         <Card className="space-y-5">
+                            <div className="grid gap-4 sm:grid-cols-3">
+                                <div className="app-card-muted">
+                                    <p className="text-sm text-neutral-500">Status</p>
+                                    <div className="mt-2">
+                                        <Badge variant={statusVariant(report.status?.slug)}>{report.status?.name}</Badge>
+                                    </div>
+                                </div>
+                                <div className="app-card-muted">
+                                    <p className="text-sm text-neutral-500">Prioritas</p>
+                                    <div className="mt-2">
+                                        <Badge variant={priorityVariant(report.priority_level)}>{priorityLabel(report.priority_level)}</Badge>
+                                    </div>
+                                </div>
+                                <div className="app-card-muted">
+                                    <p className="text-sm text-neutral-500">Kode laporan</p>
+                                    <p className="mt-2 text-base font-semibold text-neutral-900">{report.report_code}</p>
+                                </div>
+                            </div>
+
                             <div>
                                 <p className="text-sm text-neutral-500">Kategori</p>
                                 <p className="mt-1 text-lg font-semibold text-neutral-900">
@@ -203,7 +221,6 @@ export default function ReportsShow({ report }) {
                             emptyText="Belum ada histori aktivitas."
                         />
                     </section>
-                </div>
             </div>
         </AuthenticatedLayout>
     );

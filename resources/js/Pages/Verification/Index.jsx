@@ -33,49 +33,40 @@ export default function VerificationIndex({ verification }) {
                         </p>
                     </div>
                     <Link href={route('pekaseh.dashboard')}>
-                        <SecondaryButton>Kembali ke Dashboard</SecondaryButton>
+                        <SecondaryButton className="w-full sm:w-auto">Kembali ke Dashboard</SecondaryButton>
                     </Link>
                 </div>
             }
         >
             <Head title="Verifikasi Laporan" />
 
-            <div className="py-10">
-                <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <div className="app-page">
                     {flash.success && (
                         <div className="app-card border-emerald-200 bg-emerald-50 text-sm font-medium text-emerald-700">
                             {flash.success}
                         </div>
                     )}
 
-                    <section className="grid gap-4 md:grid-cols-3">
-                        <Card>
-                            <p className="text-sm text-neutral-500">Subak aktif</p>
-                            <p className="mt-2 text-lg font-semibold text-neutral-900">
-                                {verification.subak?.name ?? 'Belum ditetapkan'}
-                            </p>
+                    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        <Card className="metric-card">
+                            <p className="metric-label">Subak aktif</p>
+                            <p className="mt-2 text-xl font-bold text-neutral-900">{verification.subak?.name ?? 'Belum ditetapkan'}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Region</p>
-                            <p className="mt-2 text-lg font-semibold text-neutral-900">
-                                {verification.subak?.region ?? '-'}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Region</p>
+                            <p className="mt-2 text-xl font-bold text-neutral-900">{verification.subak?.region ?? '-'}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Menunggu verifikasi</p>
-                            <p className="mt-2 text-3xl font-bold text-amber-600">
-                                {verification.stats.pendingCount}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Menunggu verifikasi</p>
+                            <p className="metric-value text-amber-600">{verification.stats.pendingCount}</p>
                         </Card>
-                        <Card>
-                            <p className="text-sm text-neutral-500">Backlog lewat 24 jam</p>
-                            <p className="mt-2 text-3xl font-bold text-rose-600">
-                                {verification.stats.overdueCount}
-                            </p>
+                        <Card className="metric-card">
+                            <p className="metric-label">Backlog lewat 24 jam</p>
+                            <p className="metric-value text-rose-600">{verification.stats.overdueCount}</p>
                         </Card>
                     </section>
 
-                    <section className="app-card border-secondary-100 bg-secondary-50/80 text-sm leading-7 text-secondary-800">
+                    <section className="info-strip border-secondary-100 bg-secondary-50/80 text-secondary-800">
                         <p className="font-semibold">{verification.processGuidance.headline}</p>
                         <p className="mt-2">{verification.processGuidance.escalationNote}</p>
                         <p className="mt-2">{verification.processGuidance.fallbackNote}</p>
@@ -95,10 +86,7 @@ export default function VerificationIndex({ verification }) {
                                 {verification.pendingReports.length > 0 ? (
                                     <div className="divide-y divide-neutral-200">
                                         {verification.pendingReports.map((report) => (
-                                            <div
-                                                key={report.id}
-                                                className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between"
-                                            >
+                                            <div key={report.id} className="report-list-card m-4 flex flex-col gap-4 md:m-5 md:flex-row md:items-center md:justify-between">
                                                 <div className="space-y-2">
                                                     <p className="text-lg font-semibold text-neutral-900">
                                                         {report.title}
@@ -121,7 +109,7 @@ export default function VerificationIndex({ verification }) {
                                                     </div>
                                                 </div>
                                                 <Link href={route('verification.show', report.id)}>
-                                                    <PrimaryButton>Tinjau Laporan</PrimaryButton>
+                                                    <PrimaryButton className="w-full sm:w-auto">Tinjau Laporan</PrimaryButton>
                                                 </Link>
                                             </div>
                                         ))}
@@ -151,7 +139,6 @@ export default function VerificationIndex({ verification }) {
                             </section>
                         </>
                     )}
-                </div>
             </div>
         </AuthenticatedLayout>
     );
