@@ -35,6 +35,7 @@ class StoreReportRequest extends FormRequest
             'photos.*' => ['required', 'image', 'max:5120'],
             'photo_sources' => ['nullable', 'array'],
             'photo_sources.*' => ['nullable', Rule::in(PhotoCapturedFrom::values())],
+            'patrol_point_id' => ['nullable', 'exists:patrol_points,id'],   
         ];
     }
 

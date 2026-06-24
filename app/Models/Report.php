@@ -51,6 +51,14 @@ class Report extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Relasi opsional ke titik patroli asal laporan ini dibuat.
+     */
+    public function patrolPoint(): BelongsTo
+    {
+        return $this->belongsTo(PatrolPoint::class);
+    }
+
     public function subak(): BelongsTo
     {
         return $this->belongsTo(Subak::class);
@@ -95,4 +103,6 @@ class Report extends Model
     {
         return $this->hasMany(ReportHistory::class);
     }
+
+
 }

@@ -27,4 +27,20 @@ class Subak extends Model
     {
         return $this->hasMany(Report::class);
     }
+
+    /**
+     * Relasi ke titik-titik patroli di wilayah Subak ini.
+     */
+    public function patrolPoints(): HasMany
+    {
+        return $this->hasMany(PatrolPoint::class);
+    }
+
+    /**
+     * Relasi ke log hasil patroli di wilayah Subak ini.
+     */
+    public function patrolLogs(): HasMany
+    {
+        return $this->hasMany(PatrolLog::class);
+    }
 }

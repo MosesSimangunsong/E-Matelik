@@ -84,6 +84,11 @@ class ReportController extends Controller
                 'subakId' => $request->user()->subak_id,
                 'subakName' => $request->user()->subak?->name,
             ],
+            'prefill_data' => [
+                'patrol_point_id' => $request->query('patrol_point_id'),
+                'latitude' => $request->query('latitude'),
+                'longitude' => $request->query('longitude'),
+            ]
         ]);
     }
 
@@ -103,6 +108,7 @@ class ReportController extends Controller
                 'subak_id' => $subakId,
                 'category_id' => $request->integer('category_id'),
                 'status_id' => $status->id,
+                'patrol_point_id' => $request->input('patrol_point_id'),
                 'title' => $request->string('title')->toString(),
                 'description' => $request->string('description')->toString(),
                 'latitude' => $request->input('latitude'),

@@ -89,4 +89,12 @@ class User extends Authenticatable
     {
         return $this->hasRole(RoleSlug::Pelapor);
     }
+
+    /**
+     * Relasi ke log hasil patroli yang dilakukan oleh user (Matelik) ini.
+     */
+    public function patrolLogs(): HasMany
+    {
+        return $this->hasMany(PatrolLog::class);
+    }
 }

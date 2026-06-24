@@ -20,6 +20,13 @@ class RoleSeeder extends Seeder
                 'updated_at' => $now,
             ],
             [
+                'name' => 'Matelik',
+                'slug' => 'matelik',
+                'description' => 'Petugas pengawas lapangan yang melakukan patroli rutin titik Subak.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'name' => 'Pekaseh',
                 'slug' => 'pekaseh',
                 'description' => 'Verifikator awal laporan pada lingkup Subak.',

@@ -7,8 +7,11 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\Pekaseh\VerificationController;
+use App\Http\Controllers\Pekaseh\PatrolPointController; // Controller Baru
 use App\Http\Controllers\Pelapor\ReportController;
+use App\Http\Controllers\Pelapor\PatrolController; // Controller Baru
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Evidence\EvidenceCapsuleController; // Controller Baru
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,6 +24,9 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+// Rute Publik untuk Kapsul Bukti Administratif (Tanpa Middleware Auth)
+Route::get('/kapsul-bukti/{report:report_code}', [EvidenceCapsuleController::class, 'show'])->name('evidence.capsule');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'redirect'])->name('dashboard');
@@ -36,6 +42,7 @@ Route::middleware('auth')->group(function () {
         ->name('admin.dashboard');
 });
 
+// Grup Pelapor (Termasuk fungsi patroli lapangan MVP)
 Route::middleware(['auth', 'role:pelapor'])->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
@@ -43,14 +50,24 @@ Route::middleware(['auth', 'role:pelapor'])->group(function () {
         ->middleware('throttle:report-submissions')
         ->name('reports.store');
     Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
+
+    // Rute Patroli QR
+    Route::get('/pelapor/patroli/dashboard', [PatrolController::class, 'dashboard'])->name('pelapor.patrol.dashboard');
+    Route::get('/pelapor/patroli/scan/{qr_token}', [PatrolController::class, 'scanPage'])->name('pelapor.patrol.scan.page');
+    Route::post('/pelapor/patroli/scan/{patrolPoint}', [PatrolController::class, 'storeScan'])->name('pelapor.patrol.scan.store');
 });
 
+// Grup Pekaseh
 Route::middleware(['auth', 'role:pekaseh'])->group(function () {
     Route::get('/verification', [VerificationController::class, 'index'])->name('verification.index');
     Route::get('/verification/{report}', [VerificationController::class, 'show'])->name('verification.show');
     Route::patch('/verification/{report}', [VerificationController::class, 'update'])->name('verification.update');
+    
+    // Rute Kelola Titik Patroli
+    Route::resource('/pekaseh/patrol-points', PatrolPointController::class)->names('pekaseh.patrol-points');
 });
 
+// Grup Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/reports', [AdminReportController::class, 'index'])->name('admin.reports.index');
     Route::get('/admin/reports/{report}', [AdminReportController::class, 'show'])->name('admin.reports.show');
