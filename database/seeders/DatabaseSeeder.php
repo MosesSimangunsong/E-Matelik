@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             SubakSeeder::class,
             CategorySeeder::class,
             ReportStatusSeeder::class,
+            DemoUserSeeder::class,
         ]);
     }
 }

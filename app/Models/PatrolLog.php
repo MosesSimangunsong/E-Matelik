@@ -14,6 +14,7 @@ class PatrolLog extends Model
         'patrol_point_id',
         'user_id',
         'subak_id',
+        'report_id',
         'patrol_date',
         'scanned_at',
         'gps_latitude',
@@ -21,6 +22,7 @@ class PatrolLog extends Model
         'inspection_photo_path',
         'inspection_note',
         'status',
+        'report_id',
     ];
 
     protected $casts = [
@@ -52,5 +54,14 @@ class PatrolLog extends Model
     public function subak(): BelongsTo
     {
         return $this->belongsTo(Subak::class);
+    }
+    
+
+    /**
+     * Relasi opsional ke laporan jika ditemukan kerusakan saat scan.
+     */
+    public function report()
+    {
+        return $this->belongsTo(Report::class);
     }
 }

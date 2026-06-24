@@ -22,7 +22,9 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
+        "html5-qrcode": "^2.3.8",
         "leaflet": "^1.9.4",
+        "qrcode.react": "^4.2.0",
         "react-leaflet": "^4.2.1"
     }
 }

@@ -7,11 +7,11 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\Pekaseh\VerificationController;
-use App\Http\Controllers\Pekaseh\PatrolPointController; // Controller Baru
+use App\Http\Controllers\Pekaseh\PatrolPointController; 
 use App\Http\Controllers\Pelapor\ReportController;
-use App\Http\Controllers\Pelapor\PatrolController; // Controller Baru
+use App\Http\Controllers\Pelapor\PatrolController; 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Evidence\EvidenceCapsuleController; // Controller Baru
+use App\Http\Controllers\Evidence\EvidenceCapsuleController; 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -31,9 +31,8 @@ Route::get('/kapsul-bukti/{report:report_code}', [EvidenceCapsuleController::cla
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'redirect'])->name('dashboard');
     Route::get('/map', [MapController::class, 'index'])->name('map.index');
-    Route::get('/pelapor/dashboard', [DashboardController::class, 'pelapor'])
-        ->middleware('role:pelapor')
-        ->name('pelapor.dashboard');
+
+    // Kembalikan rute dashboard admin dan pekaseh seperti aslinya
     Route::get('/pekaseh/dashboard', [DashboardController::class, 'pekaseh'])
         ->middleware('role:pekaseh')
         ->name('pekaseh.dashboard');
@@ -42,32 +41,44 @@ Route::middleware('auth')->group(function () {
         ->name('admin.dashboard');
 });
 
-// Grup Pelapor (Termasuk fungsi patroli lapangan MVP)
+// ==========================================
+// RUTE KHUSUS PELAPOR (MATELIK / KRAMA)
+// ==========================================
 Route::middleware(['auth', 'role:pelapor'])->group(function () {
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    // 1. Dashboard utama Pelapor sekarang adalah Checklist Patroli Harian
+    Route::get('/pelapor/dashboard', [PatrolController::class, 'dashboard'])->name('pelapor.dashboard');
+
+    // Rute Laporan Manual (Kembali menggunakan nama asli)
     Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
     Route::post('/reports', [ReportController::class, 'store'])
         ->middleware('throttle:report-submissions')
         ->name('reports.store');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
 
-    // Rute Patroli QR
-    Route::get('/pelapor/patroli/dashboard', [PatrolController::class, 'dashboard'])->name('pelapor.patrol.dashboard');
-    Route::get('/pelapor/patroli/scan/{qr_token}', [PatrolController::class, 'scanPage'])->name('pelapor.patrol.scan.page');
-    Route::post('/pelapor/patroli/scan/{patrolPoint}', [PatrolController::class, 'storeScan'])->name('pelapor.patrol.scan.store');
+    // 2. Rute operasional Scan QR Patroli
+    Route::get('/pelapor/patrol/scan/{qr_token}', [PatrolController::class, 'scanPage'])->name('pelapor.patrol.scan.page');
+    Route::post('/pelapor/patrol/scan/{patrolPoint}', [PatrolController::class, 'storeScan'])->name('pelapor.patrol.scan.store');
 });
 
-// Grup Pekaseh
+// ==========================================
+// RUTE KHUSUS PEKASEH
+// ==========================================
 Route::middleware(['auth', 'role:pekaseh'])->group(function () {
+    // Rute Verifikasi (Kembali menggunakan nama asli agar dashboard lama tidak error)
     Route::get('/verification', [VerificationController::class, 'index'])->name('verification.index');
     Route::get('/verification/{report}', [VerificationController::class, 'show'])->name('verification.show');
     Route::patch('/verification/{report}', [VerificationController::class, 'update'])->name('verification.update');
-    
-    // Rute Kelola Titik Patroli
-    Route::resource('/pekaseh/patrol-points', PatrolPointController::class)->names('pekaseh.patrol-points');
+
+    // Rute Baru untuk Pekaseh Mengelola Titik Patroli
+    Route::resource('/pekaseh/patrol-points', PatrolPointController::class)
+        ->except(['show'])
+        ->names('pekaseh.patrol-points');
 });
 
-// Grup Admin
+// ==========================================
+// RUTE KHUSUS ADMIN (DINAS)
+// ==========================================
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/reports', [AdminReportController::class, 'index'])->name('admin.reports.index');
     Route::get('/admin/reports/{report}', [AdminReportController::class, 'show'])->name('admin.reports.show');

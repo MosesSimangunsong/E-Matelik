@@ -58,6 +58,11 @@ class Report extends Model
     {
         return $this->belongsTo(PatrolPoint::class);
     }
+    
+    public function patrolLog()
+    {
+        return $this->hasOne(PatrolLog::class);
+    }
 
     public function subak(): BelongsTo
     {

@@ -6,35 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('patrol_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patrol_point_id')->constrained('patrol_points')->restrictOnDelete();
-            $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
-            $table->foreignId('subak_id')->constrained('subaks')->restrictOnDelete();
+            $table->foreignId('patrol_point_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete(); // checked_by
             
-            $table->date('patrol_date');
-            $table->timestamp('scanned_at')->useCurrent();
-            
-            $table->decimal('gps_latitude', 10, 7)->nullable();
-            $table->decimal('gps_longitude', 10, 7)->nullable();
-            
-            $table->string('inspection_photo_path')->nullable();
+            // Status kondisi sesuai PRD baru
+            $table->enum('condition_status', ['safe', 'needs_attention', 'damaged'])->default('safe');
             $table->text('inspection_note')->nullable();
             
-            $table->string('status')->default('checked');
+            // Lokasi GPS saat scan dilakukan
+            $table->decimal('gps_latitude', 10, 8)->nullable();
+            $table->decimal('gps_longitude', 11, 8)->nullable();
             
-            $table->timestamps();
+            // Terhubung ke tabel reports jika kondisi "damaged" dan pelapor membuat laporan
+            $table->foreignId('report_id')->nullable()->constrained('reports')->nullOnDelete();
+            
+            $table->timestamps(); // created_at akan bertindak sebagai checked_at
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('patrol_logs');

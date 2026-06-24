@@ -8,13 +8,15 @@ import { useState } from "react";
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
     const roleSlug = user?.role?.slug;
+    
+    // Konfigurasi Menu Berdasarkan Role
     const menuItems =
         roleSlug === "pelapor"
             ? [
                   {
                       label: "Dashboard",
                       href: route("pelapor.dashboard"),
-                      active: route().current("pelapor.dashboard"),
+                      active: route().current("pelapor.dashboard") || route().current("pelapor.patrol.*"),
                   },
                   {
                       label: "Buat Laporan",
@@ -22,21 +24,11 @@ export default function AuthenticatedLayout({ header, children }) {
                       active: route().current("reports.create"),
                   },
                   {
-                      label: "Laporan Saya",
+                      label: "List Laporan",
                       href: route("reports.index"),
                       active:
                           route().current("reports.index") ||
                           route().current("reports.show"),
-                  },
-                  {
-                      label: "Peta",
-                      href: route("map.index"),
-                      active: route().current("map.index"),
-                  },
-                  {
-                      label: "Patroli Matelik",
-                      href: route("pelapor.patrol.dashboard"),
-                      active: route().current("pelapor.patrol.*"),
                   },
               ]
             : roleSlug === "pekaseh"
@@ -109,7 +101,10 @@ export default function AuthenticatedLayout({ header, children }) {
               ? route("pekaseh.dashboard")
               : route("pelapor.dashboard");
 
-    const mobileMenuItems = menuItems.slice(0, 4);
+    // Menyesuaikan navigasi bawah (mobile) berdasarkan jumlah menu yang ada
+    // Pelapor hanya punya 3 menu, jadi kita ambil 3. Role lain 4.
+    const mobileMenuCount = roleSlug === "pelapor" ? 3 : 4;
+    const mobileMenuItems = menuItems.slice(0, mobileMenuCount);
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -297,8 +292,9 @@ export default function AuthenticatedLayout({ header, children }) {
 
             <main className="safe-bottom pb-8">{children}</main>
 
+            {/* Navigasi Bawah (Mobile) */}
             <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white/95 px-3 pt-2 backdrop-blur lg:hidden">
-                <div className="safe-nav grid grid-cols-4 gap-2">
+                <div className={`safe-nav grid gap-2 ${roleSlug === 'pelapor' ? 'grid-cols-3' : 'grid-cols-4'}`}>
                     {mobileMenuItems.map((item) => (
                         <Link
                             key={item.label}
