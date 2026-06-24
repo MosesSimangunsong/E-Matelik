@@ -1,0 +1,68 @@
+```mermaid
+flowchart TD
+    A[Matelik login] --> B[Masuk ke Dashboard Matelik]
+    B --> C[Buka menu Titik Patroli]
+    C --> D[Lihat daftar titik patroli harian]
+
+    D --> E{Pilih titik patroli}
+    E --> F[Buka detail titik patroli]
+    F --> G{Kondisi titik bagaimana?}
+
+    G -->|Aman| H[Scan QR titik patroli]
+    H --> I[Sistem validasi login, role, dan subak]
+    I --> J[Simpan log patroli]
+    J --> K[Simpan:
+    waktu scan
+    akun Matelik
+    GPS saat scan
+    foto inspeksi
+    catatan kondisi]
+    K --> L[Status titik hari ini = sudah diperiksa]
+    L --> M[Daftar patroli menampilkan checklist aman]
+    M --> D
+
+    G -->|Rusak / Bermasalah| N[Jangan scan QR]
+    N --> O[Klik tombol Laporkan Gangguan]
+    O --> P[Sistem buka form laporan]
+    P --> Q[Isi otomatis:
+    kode titik
+    nama titik
+    jenis titik
+    subak
+    koordinat]
+    Q --> R[Matelik unggah foto kerusakan]
+    R --> S[Kirim laporan]
+    S --> T[Status laporan = Menunggu Verifikasi]
+    T --> U[Pekaseh menerima laporan]
+    U --> V{Keputusan Pekaseh}
+
+    V -->|Valid| W[Laporan diverifikasi]
+    V -->|Perlu Klarifikasi| X[Laporan perlu klarifikasi]
+    V -->|Eskalasi Administratif Lanjutan| Y[Laporan diekskalasi]
+    V -->|Selesai Internal| Z[Laporan selesai internal]
+
+    W --> AA[Masuk ke tracking admin / proses lanjutan]
+    X --> AA
+    Y --> AA
+    Z --> AA
+
+    AA --> AB[Update status dan histori]
+    AB --> AC[Closed-loop evidence jika selesai]
+    AC --> AD[Laporan selesai]
+
+    subgraph Pekaseh
+        U
+        V
+        W
+        X
+        Y
+        Z
+    end
+
+    subgraph Admin
+        AA
+        AB
+        AC
+        AD
+    end
+```

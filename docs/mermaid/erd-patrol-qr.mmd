@@ -1,0 +1,168 @@
+```mermaid
+erDiagram
+    roles {
+        bigint id PK
+        string name
+        string slug
+        string description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    subaks {
+        bigint id PK
+        string name
+        string region
+        string village
+        string district
+        text description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users {
+        bigint id PK
+        bigint role_id FK
+        bigint subak_id FK
+        string name
+        string email
+        string password
+        string phone
+        boolean is_active
+        timestamp email_verified_at
+        string remember_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    categories {
+        bigint id PK
+        string name
+        string slug
+        string description
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    report_statuses {
+        bigint id PK
+        string name
+        string slug
+        string description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    patrol_points {
+        bigint id PK
+        bigint subak_id FK
+        bigint created_by FK
+        string point_code
+        string name
+        string point_type
+        text description
+        decimal latitude
+        decimal longitude
+        string reference_photo_path
+        string qr_token
+        integer patrol_order
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    patrol_logs {
+        bigint id PK
+        bigint patrol_point_id FK
+        bigint user_id FK
+        bigint subak_id FK
+        date patrol_date
+        timestamp scanned_at
+        decimal gps_latitude
+        decimal gps_longitude
+        string inspection_photo_path
+        text inspection_note
+        string status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    reports {
+        bigint id PK
+        string report_code
+        bigint user_id FK
+        bigint subak_id FK
+        bigint category_id FK
+        bigint status_id FK
+        bigint patrol_point_id FK
+        bigint verified_by FK
+        bigint resolved_by FK
+        string title
+        text description
+        decimal latitude
+        decimal longitude
+        string address_text
+        string priority_level
+        text verification_note
+        text resolution_note
+        timestamp verified_at
+        timestamp resolved_at
+        timestamp submitted_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    report_photos {
+        bigint id PK
+        bigint report_id FK
+        string photo_path
+        string original_name
+        string mime_type
+        integer file_size
+        string photo_role
+        string file_hash
+        string captured_from
+        bigint uploaded_by FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    report_histories {
+        bigint id PK
+        bigint report_id FK
+        bigint user_id FK
+        bigint from_status_id FK
+        bigint to_status_id FK
+        string action
+        text note
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    roles ||--o{ users : has
+    subaks ||--o{ users : has
+
+    subaks ||--o{ patrol_points : has
+    users ||--o{ patrol_points : creates
+
+    patrol_points ||--o{ patrol_logs : has
+    users ||--o{ patrol_logs : scans
+    subaks ||--o{ patrol_logs : scopes
+
+    subaks ||--o{ reports : has
+    users ||--o{ reports : submits
+    categories ||--o{ reports : classifies
+    report_statuses ||--o{ reports : tracks
+    users ||--o{ reports : verifies
+    users ||--o{ reports : resolves
+    patrol_points ||--o{ reports : sources
+
+    reports ||--o{ report_photos : has
+    users ||--o{ report_photos : uploads
+
+    reports ||--o{ report_histories : has
+    users ||--o{ report_histories : acts
+    report_statuses ||--o{ report_histories : from_status
+    report_statuses ||--o{ report_histories : to_status
+```
