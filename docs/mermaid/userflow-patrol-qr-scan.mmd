@@ -1,0 +1,102 @@
+flowchart TD
+Start([Mulai]) --> RegisterPoint
+
+```
+subgraph Setup["Setup Titik QR Telabah"]
+    RegisterPoint["Pekaseh/Admin mendaftarkan titik telabah"]
+    InputPoint["Isi data titik:<br/>nama, jenis, subak, koordinat, deskripsi"]
+    GenerateCode["Sistem generate otomatis:<br/>point_code, qr_token, scan_url"]
+    ManualQR["Pengurus membuat QR manual<br/>dari scan_url"]
+    AttachQR["QR ditempel di titik telabah"]
+end
+
+RegisterPoint --> InputPoint --> GenerateCode --> ManualQR --> AttachQR
+AttachQR --> PatrolStart
+
+subgraph Patrol["Patroli Matelik Berbasis QR"]
+    PatrolStart["Petugas Matelik melakukan patroli"]
+    ScanQR["Petugas scan QR di titik telabah"]
+    OpenURL["QR membuka scan_url:<br/>/patrol/scan/{qr_token}"]
+    CheckLogin{"User sudah login?"}
+    Login["Arahkan ke halaman login"]
+    ReadToken["Sistem membaca qr_token"]
+    ValidateToken{"QR token valid<br/>dan titik aktif?"}
+    InvalidQR["Tampilkan pesan:<br/>QR tidak valid / titik tidak aktif"]
+    ShowPoint["Tampilkan halaman scan titik:<br/>nama titik, kode, jenis, lokasi"]
+end
+
+PatrolStart --> ScanQR --> OpenURL --> CheckLogin
+CheckLogin -- "Belum" --> Login --> ReadToken
+CheckLogin -- "Sudah" --> ReadToken
+ReadToken --> ValidateToken
+ValidateToken -- "Tidak" --> InvalidQR --> EndInvalid([Selesai])
+ValidateToken -- "Ya" --> ShowPoint
+
+ShowPoint --> ChooseCondition
+
+subgraph CheckIn["Pencatatan Pemeriksaan Titik"]
+    ChooseCondition{"Kondisi titik?"}
+    Safe["Pilih: Aman"]
+    Attention["Pilih: Perlu Perhatian"]
+    Damaged["Pilih: Rusak / Terganggu"]
+    SaveSafe["Simpan pemeriksaan:<br/>condition_status = safe"]
+    SaveAttention["Simpan pemeriksaan:<br/>condition_status = needs_attention<br/>catatan opsional"]
+    SaveDamaged["Simpan pemeriksaan:<br/>condition_status = damaged<br/>catatan awal"]
+    ChecklistUpdate["Dashboard patroli harian berubah:<br/>titik menjadi centang / sudah diperiksa"]
+end
+
+ChooseCondition -- "Aman" --> Safe --> SaveSafe --> ChecklistUpdate
+ChooseCondition -- "Perlu Perhatian" --> Attention --> SaveAttention --> ChecklistUpdate
+ChooseCondition -- "Rusak / Terganggu" --> Damaged --> SaveDamaged --> ChecklistUpdate
+
+ChecklistUpdate --> NeedReport{"Perlu membuat laporan?"}
+
+NeedReport -- "Tidak" --> PatrolDone([Patroli titik selesai])
+NeedReport -- "Ya, titik rusak" --> CreateReport
+
+subgraph ReportFlow["Laporan dari Titik QR"]
+    CreateReport["Klik: Buat Laporan dari Titik Ini"]
+    PrefillReport["Form laporan terbuka dengan data otomatis:<br/>subak, koordinat, nama titik, kode titik"]
+    FillReport["Petugas mengisi:<br/>judul, kategori, deskripsi, foto bukti awal"]
+    SubmitReport["Submit laporan"]
+    StoreReport["Sistem menyimpan laporan:<br/>status = Menunggu Verifikasi"]
+    LinkCheck["Record pemeriksaan terhubung<br/>dengan report_id"]
+    HistoryCreated["Histori laporan mencatat:<br/>created from patrol checkpoint"]
+end
+
+CreateReport --> PrefillReport --> FillReport --> SubmitReport --> StoreReport --> LinkCheck --> HistoryCreated
+HistoryCreated --> PekasehVerify
+
+subgraph Verification["Verifikasi Pekaseh dan Kapsul Bukti"]
+    PekasehVerify["Pekaseh meninjau laporan"]
+    Verdict{"Keputusan Pekaseh?"}
+    Valid["Valid / Diverifikasi"]
+    Clarify["Perlu Klarifikasi"]
+    Escalate["Eskalasi Administratif Lanjutan"]
+    InternalDone["Selesai Internal"]
+    EvidenceCapsule["Jika laporan diverifikasi,<br/>sistem menyiapkan Kapsul Bukti Administratif Ber-QR"]
+    CapsulePublic["QR kapsul membuka halaman ringkas:<br/>kode laporan, titik, koordinat, foto, timestamp,<br/>status, histori, catatan Pekaseh"]
+    Privacy["Identitas pelapor disamarkan<br/>pada tampilan publik/luas"]
+end
+
+PekasehVerify --> Verdict
+Verdict -- "Valid" --> Valid --> EvidenceCapsule
+Verdict -- "Perlu Klarifikasi" --> Clarify --> EndClarify([Menunggu klarifikasi])
+Verdict -- "Eskalasi Administratif Lanjutan" --> Escalate --> EvidenceCapsule
+Verdict -- "Selesai Internal" --> InternalDone --> EvidenceCapsule
+EvidenceCapsule --> CapsulePublic --> Privacy --> End([Selesai])
+
+classDef setup fill:#F1EFE8,stroke:#A8743B,color:#25241F
+classDef patrol fill:#EAF4EA,stroke:#4F8A3F,color:#25241F
+classDef check fill:#EAF3F8,stroke:#3D8BBA,color:#25241F
+classDef report fill:#FFF7E6,stroke:#D39A2C,color:#25241F
+classDef danger fill:#FDECEC,stroke:#C94B4B,color:#25241F
+classDef done fill:#EDF7F0,stroke:#3F8C5A,color:#25241F
+
+class RegisterPoint,InputPoint,GenerateCode,ManualQR,AttachQR setup
+class PatrolStart,ScanQR,OpenURL,CheckLogin,Login,ReadToken,ValidateToken,ShowPoint patrol
+class ChooseCondition,Safe,Attention,Damaged,SaveSafe,SaveAttention,SaveDamaged,ChecklistUpdate check
+class CreateReport,PrefillReport,FillReport,SubmitReport,StoreReport,LinkCheck,HistoryCreated report
+class InvalidQR danger
+class EndInvalid,PatrolDone,EndClarify,End done
+```
