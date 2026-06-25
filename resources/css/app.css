@@ -240,6 +240,59 @@
         transform: translateY(-4px);
         box-shadow: 0 18px 36px rgba(37, 36, 31, 0.12);
     }
+
+    .public-shell {
+        @apply min-h-screen bg-[#f6f3eb] text-neutral-900;
+        background-image:
+            radial-gradient(circle at top left, rgba(79, 138, 63, 0.08), transparent 26%),
+            radial-gradient(circle at right 12%, rgba(61, 139, 186, 0.08), transparent 24%),
+            linear-gradient(180deg, #f7f4ec 0%, #f4f0e7 42%, #f8f6ef 100%);
+    }
+
+    .public-surface {
+        @apply rounded-[24px] border border-white/70 bg-white/80 backdrop-blur-md;
+        box-shadow: 0 22px 70px rgba(37, 36, 31, 0.07);
+    }
+
+    .public-subtle-grid {
+        background-image:
+            linear-gradient(rgba(61, 139, 186, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(79, 138, 63, 0.08) 1px, transparent 1px);
+        background-size: 34px 34px;
+        background-position: center;
+    }
+
+    .public-hairline {
+        @apply border border-neutral-200/80 bg-white/70;
+    }
+
+    .public-pill {
+        @apply inline-flex items-center gap-2 rounded-full border border-neutral-200/80 bg-white/80 px-3 py-1.5 text-xs font-medium text-neutral-700 backdrop-blur;
+    }
+
+    .public-nav-link {
+        @apply text-sm font-medium text-neutral-500 transition-colors duration-200 hover:text-neutral-900;
+    }
+
+    .public-section-title {
+        @apply text-[2rem] font-semibold tracking-tight text-neutral-900 md:text-[2.4rem];
+    }
+
+    .public-muted {
+        @apply text-sm leading-7 text-neutral-600 md:text-base;
+    }
+
+    .public-hover-lift {
+        transition:
+            transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+            border-color 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .public-hover-lift:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 42px rgba(37, 36, 31, 0.08);
+    }
 }
 
 @layer utilities {
@@ -276,6 +329,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
     .landing-orb,
     .hero-reveal,
     .card-float {
@@ -285,6 +342,13 @@
 
     .card-float:hover {
         transform: none;
+        box-shadow: var(--shadow-panel);
+    }
+
+    .public-hover-lift,
+    .public-hover-lift:hover {
+        transform: none !important;
+        transition: none !important;
         box-shadow: var(--shadow-panel);
     }
 }

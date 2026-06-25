@@ -1,7 +1,14 @@
 import Badge from '@/Components/Badge';
 import Card from '@/Components/Card';
 import LeafletMap from '@/Components/maps/LeafletMap';
+import {
+    fadeInUp,
+    scaleIn,
+    staggerContainer,
+    staggerItem,
+} from '@/lib/motionPresets';
 import { priorityLabel, priorityVariant, statusVariant } from '@/lib/reportPresentation';
+import { motion, useReducedMotion } from 'motion/react';
 
 function mapCenter(reports) {
     if (reports.length > 0) {
@@ -12,6 +19,8 @@ function mapCenter(reports) {
 }
 
 export default function PublicReportsSection({ reports = [], summary = {} }) {
+    const shouldReduceMotion = useReducedMotion();
+
     const markers = reports.map((report) => ({
         id: report.id,
         title: report.title,
@@ -23,48 +32,64 @@ export default function PublicReportsSection({ reports = [], summary = {} }) {
         priority_level: report.priority_level,
     }));
 
+    const revealInView = shouldReduceMotion
+        ? {}
+        : {
+              initial: 'hidden',
+              whileInView: 'visible',
+              viewport: { once: true, amount: 0.2 },
+          };
+
     return (
         <section id="laporan-publik" className="border-t border-zinc-200/70 bg-white/70 py-24">
             <div className="mx-auto max-w-7xl px-6">
-                <div className="mx-auto max-w-3xl text-center">
+                <motion.div
+                    className="mx-auto max-w-3xl text-center"
+                    variants={fadeInUp}
+                    {...revealInView}
+                >
                     <p className="text-sm font-semibold uppercase tracking-[0.28em] text-emerald-700">
-                        Dashboard Publik
+                        Monitoring Publik
                     </p>
-                    <h2 className="mt-4 text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl">
+                    <h2 className="mt-4 public-section-title">
                         Pantau Laporan Telabah Terverifikasi
                     </h2>
-                    <p className="mt-4 text-base leading-8 text-zinc-600 md:text-lg">
+                    <p className="mt-4 public-muted">
                         Laporan yang tampil di sini telah melewati proses verifikasi awal atau tindak lanjut administratif.
                     </p>
-                </div>
+                </motion.div>
 
-                <div className="mt-12 grid gap-4 md:grid-cols-4">
-                    <Card className="metric-card bg-white/90">
-                        <p className="metric-label">Total laporan publik</p>
-                        <p className="metric-value">{summary.total ?? 0}</p>
-                    </Card>
-                    <Card className="metric-card bg-white/90">
-                        <p className="metric-label">Diverifikasi</p>
-                        <p className="metric-value text-sky-600">{summary.verified ?? 0}</p>
-                    </Card>
-                    <Card className="metric-card bg-white/90">
-                        <p className="metric-label">Diekskalasi</p>
-                        <p className="metric-value text-rose-600">{summary.escalated ?? 0}</p>
-                    </Card>
-                    <Card className="metric-card bg-white/90">
-                        <p className="metric-label">Selesai</p>
-                        <p className="metric-value text-emerald-600">{summary.completed ?? 0}</p>
-                    </Card>
-                </div>
+                <motion.div
+                    className="mt-12 grid gap-4 md:grid-cols-4"
+                    variants={staggerContainer}
+                    {...revealInView}
+                >
+                    {[
+                        ['Total laporan publik', summary.total ?? 0, 'text-neutral-900'],
+                        ['Diverifikasi', summary.verified ?? 0, 'text-sky-600'],
+                        ['Diekskalasi', summary.escalated ?? 0, 'text-rose-600'],
+                        ['Selesai', summary.completed ?? 0, 'text-emerald-600'],
+                    ].map(([label, value, valueClass]) => (
+                        <motion.div key={label} variants={staggerItem}>
+                            <Card className="metric-card public-hover-lift bg-white/90">
+                                <p className="metric-label">{label}</p>
+                                <p className={`metric-value ${valueClass}`}>{value}</p>
+                            </Card>
+                        </motion.div>
+                    ))}
+                </motion.div>
 
                 <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-                    <LeafletMap
-                        markers={markers}
-                        center={mapCenter(reports)}
-                        zoom={12}
-                        heightClass="h-[380px] lg:h-[560px]"
-                    />
+                    <motion.div variants={scaleIn} {...revealInView}>
+                        <LeafletMap
+                            markers={markers}
+                            center={mapCenter(reports)}
+                            zoom={12}
+                            heightClass="h-[380px] lg:h-[560px]"
+                        />
+                    </motion.div>
 
+                    <motion.div variants={fadeInUp} {...revealInView}>
                     <Card className="space-y-4 bg-white/90">
                         <h3 className="text-xl font-semibold text-neutral-900">
                             Ringkasan laporan publik
@@ -79,9 +104,10 @@ export default function PublicReportsSection({ reports = [], summary = {} }) {
                             Klik detail untuk membuka kapsul bukti administratif yang dapat dibaca masyarakat tanpa login.
                         </p>
                     </Card>
+                    </motion.div>
                 </div>
 
-                <div className="mt-12 space-y-4">
+                <motion.div className="mt-12 space-y-4" variants={fadeInUp} {...revealInView}>
                     <div>
                         <h3 className="text-2xl font-semibold text-neutral-900">Daftar laporan publik</h3>
                         <p className="mt-2 text-sm text-neutral-500">
@@ -90,9 +116,14 @@ export default function PublicReportsSection({ reports = [], summary = {} }) {
                     </div>
 
                     {reports.length > 0 ? (
-                        <div className="grid gap-5 lg:grid-cols-2">
+                        <motion.div
+                            className="grid gap-5 lg:grid-cols-2"
+                            variants={staggerContainer}
+                            {...revealInView}
+                        >
                             {reports.map((report) => (
-                                <Card key={report.id} className="overflow-hidden bg-white/95">
+                                <motion.div key={report.id} variants={staggerItem}>
+                                <Card className="public-hover-lift overflow-hidden bg-white/95">
                                     {report.initial_photo_url ? (
                                         <img
                                             src={report.initial_photo_url}
@@ -135,8 +166,9 @@ export default function PublicReportsSection({ reports = [], summary = {} }) {
                                         </div>
                                     </div>
                                 </Card>
+                                </motion.div>
                             ))}
-                        </div>
+                        </motion.div>
                     ) : (
                         <Card className="bg-white/90">
                             <p className="text-sm text-neutral-500">
@@ -144,7 +176,7 @@ export default function PublicReportsSection({ reports = [], summary = {} }) {
                             </p>
                         </Card>
                     )}
-                </div>
+                </motion.div>
             </div>
         </section>
     );

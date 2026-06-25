@@ -55,6 +55,18 @@ export default {
                 soft: '0 16px 40px rgba(37, 36, 31, 0.08)',
                 panel: '0 10px 30px rgba(61, 139, 186, 0.08)',
             },
+            transitionTimingFunction: {
+                matelik: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            },
+            keyframes: {
+                urgentPulse: {
+                    '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+                    '50%': { opacity: '.55', transform: 'scale(1.22)' },
+                },
+            },
+            animation: {
+                'urgent-pulse': 'urgentPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
         },
     },
 

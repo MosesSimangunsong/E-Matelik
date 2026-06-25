@@ -3,66 +3,30 @@ import { Link } from '@inertiajs/react';
 
 export default function GuestLayout({ children }) {
     return (
-        <div className="app-shell px-4 py-6 sm:px-6 sm:py-8">
-            <div className="mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-6xl gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-                <section className="overflow-hidden rounded-[28px] border border-emerald-100 bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-600 p-6 text-white shadow-soft sm:p-8 lg:flex lg:min-h-[620px] lg:flex-col lg:justify-between lg:p-10">
-                    <div className="space-y-6">
-                        <Link href="/" className="inline-flex items-center gap-4">
-                            <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white backdrop-blur">
-                                <ApplicationLogo className="h-11 w-11 object-contain" />
-                            </span>
-                            <div>
-                                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-100">
-                                    E-Matelik
-                                </p>
-                                <p className="text-sm text-emerald-50/80">
-                                    WebGIS patroli Subak berbasis bukti
-                                </p>
-                            </div>
-                        </Link>
-                        <div className="max-w-xl space-y-5">
-                            <p className="eyebrow !text-emerald-100">Lingkungan - Sawah - Air</p>
-                            <h1 className="text-3xl font-bold leading-tight text-white sm:text-4xl">
-                                Dokumentasikan gangguan telabah dengan alur yang rapi, tenang, dan terarah.
-                            </h1>
-                            <p className="max-w-lg text-base leading-8 text-emerald-50/85">
-                                E-Matelik membantu pelapor, Pekaseh, dan admin menjaga bukti lapangan
-                                tetap terhubung dengan lokasi, verifikasi, dan tindak lanjut.
+        <div className="public-shell flex min-h-screen items-center justify-center px-4 py-8 sm:px-6">
+            <div className="pointer-events-none absolute inset-0">
+                <div className="absolute left-[14%] top-[12%] h-40 w-40 rounded-full bg-primary-500/6 blur-3xl" />
+                <div className="absolute bottom-[10%] right-[12%] h-52 w-52 rounded-full bg-secondary-500/8 blur-3xl" />
+            </div>
+
+            <div className="relative w-full max-w-md">
+                <div className="mb-5 flex items-center justify-center gap-3">
+                    <Link href="/" className="flex items-center gap-3">
+                        <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/80 bg-white/90 shadow-[0_10px_24px_rgba(37,36,31,0.06)]">
+                            <ApplicationLogo className="h-8 w-8 object-contain" />
+                        </span>
+                        <div>
+                            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary-600">
+                                E-Matelik
                             </p>
+                            <p className="text-xs text-neutral-500">Sistem internal pemantauan telabah</p>
                         </div>
-                    </div>
+                    </Link>
+                </div>
 
-                    <div className="mt-8 grid gap-4 sm:grid-cols-3 lg:mt-0">
-                        <div className="rounded-card border border-white/15 bg-white/10 p-5 backdrop-blur">
-                            <p className="text-sm text-emerald-50/80">Spasial</p>
-                            <p className="mt-2 text-lg font-semibold">Peta jadi pusat laporan</p>
-                        </div>
-                        <div className="rounded-card border border-white/15 bg-white/10 p-5 backdrop-blur">
-                            <p className="text-sm text-emerald-50/80">Verifikasi</p>
-                            <p className="mt-2 text-lg font-semibold">Pekaseh tetap jadi pintu awal</p>
-                        </div>
-                        <div className="rounded-card border border-white/15 bg-white/10 p-5 backdrop-blur">
-                            <p className="text-sm text-emerald-50/80">Tracking</p>
-                            <p className="mt-2 text-lg font-semibold">Status mudah dipantau</p>
-                        </div>
-                    </div>
-                </section>
-
-                <section className="flex items-center">
-                    <div className="w-full app-panel px-5 py-6 sm:px-8 sm:py-10">
-                        <div className="mb-8 flex items-center gap-4 lg:hidden">
-                            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-panel">
-                                <ApplicationLogo className="h-9 w-9 object-contain" />
-                            </span>
-                            <div>
-                                <p className="text-lg font-bold text-neutral-900">E-Matelik</p>
-                                <p className="text-sm text-neutral-500">Pelaporan telabah berbasis lokasi</p>
-                            </div>
-                        </div>
-
-                        {children}
-                    </div>
-                </section>
+                <div className="public-surface px-6 py-7 sm:px-8 sm:py-8">
+                    {children}
+                </div>
             </div>
         </div>
     );
