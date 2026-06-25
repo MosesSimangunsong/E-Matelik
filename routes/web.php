@@ -1,29 +1,24 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\HistoryController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MapController;
+use App\Http\Controllers\Pekaseh\PekasehReportController;
 use App\Http\Controllers\Pekaseh\VerificationController;
 use App\Http\Controllers\Pekaseh\PatrolPointController; 
+use App\Http\Controllers\Pekaseh\PatrolHistoryController;
 use App\Http\Controllers\Pelapor\ReportController;
 use App\Http\Controllers\Pelapor\PatrolController; 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Evidence\EvidenceCapsuleController; 
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\PublicReportController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+Route::get('/', [PublicReportController::class, 'home'])->name('home');
+
+Route::redirect('/laporan-publik', '/#laporan-publik')->name('public.reports.index');
 
 // Rute Publik untuk Kapsul Bukti Administratif (Tanpa Middleware Auth)
 Route::get('/kapsul-bukti/{report:report_code}', [EvidenceCapsuleController::class, 'show'])->name('evidence.capsule');
@@ -68,7 +63,10 @@ Route::middleware(['auth', 'role:pekaseh'])->group(function () {
     // Rute Verifikasi (Kembali menggunakan nama asli agar dashboard lama tidak error)
     Route::get('/verification', [VerificationController::class, 'index'])->name('verification.index');
     Route::get('/verification/{report}', [VerificationController::class, 'show'])->name('verification.show');
+    Route::get('/verification/{report}/pdf', [VerificationController::class, 'downloadPdf'])->name('verification.pdf');
     Route::patch('/verification/{report}', [VerificationController::class, 'update'])->name('verification.update');
+    Route::get('/pekaseh/reports', [PekasehReportController::class, 'index'])->name('pekaseh.reports.index');
+    Route::get('/pekaseh/patrol-history', [PatrolHistoryController::class, 'index'])->name('pekaseh.patrol-history.index');
 
     // Rute Baru untuk Pekaseh Mengelola Titik Patroli
     Route::resource('/pekaseh/patrol-points', PatrolPointController::class)
@@ -80,9 +78,6 @@ Route::middleware(['auth', 'role:pekaseh'])->group(function () {
 // RUTE KHUSUS ADMIN (DINAS)
 // ==========================================
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/reports', [AdminReportController::class, 'index'])->name('admin.reports.index');
-    Route::get('/admin/reports/{report}', [AdminReportController::class, 'show'])->name('admin.reports.show');
-    Route::patch('/admin/reports/{report}/status', [AdminReportController::class, 'updateStatus'])->name('admin.reports.update-status');
     Route::get('/admin/categories', [CategoryController::class, 'index'])->name('admin.categories.index');
     Route::post('/admin/categories', [CategoryController::class, 'store'])->name('admin.categories.store');
     Route::patch('/admin/categories/{category}', [CategoryController::class, 'update'])->name('admin.categories.update');

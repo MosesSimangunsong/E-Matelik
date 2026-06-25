@@ -8,11 +8,13 @@ use App\Enums\ReportStatusSlug;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreReportRequest;
 use App\Models\Category;
+use App\Models\PatrolLog;
 use App\Models\Report;
 use App\Models\ReportHistory;
 use App\Models\ReportStatus;
 use App\Models\Subak;
 use App\Support\ReportPhotoUploader;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -72,6 +74,12 @@ class ReportController extends Controller
 
     public function create(Request $request): Response
     {
+        $prefillData = [
+            'patrol_point_id' => $request->query('patrol_point_id'),
+            'latitude' => $request->query('latitude'),
+            'longitude' => $request->query('longitude'),
+        ];
+
         return Inertia::render('Reports/Create', [
             'categories' => Category::query()
                 ->where('is_active', true)
@@ -84,11 +92,7 @@ class ReportController extends Controller
                 'subakId' => $request->user()->subak_id,
                 'subakName' => $request->user()->subak?->name,
             ],
-            'prefill_data' => [
-                'patrol_point_id' => $request->query('patrol_point_id'),
-                'latitude' => $request->query('latitude'),
-                'longitude' => $request->query('longitude'),
-            ]
+            'prefill_data' => $prefillData,
         ]);
     }
 
@@ -99,9 +103,11 @@ class ReportController extends Controller
             ->where('slug', ReportStatusSlug::PendingVerification->value)
             ->firstOrFail();
 
+        $validated = $request->validated();
         $subakId = $user->subak_id ?? (int) $request->integer('subak_id');
+        $patrolPointId = $validated['patrol_point_id'] ?? null;
 
-        $report = DB::transaction(function () use ($request, $user, $status, $subakId) {
+        $report = DB::transaction(function () use ($request, $user, $status, $subakId, $patrolPointId) {
             $report = Report::query()->create([
                 'report_code' => $this->generateReportCode(),
                 'user_id' => $user->id,
@@ -120,6 +126,12 @@ class ReportController extends Controller
                 'submitted_at' => now(),
             ]);
 
+            if ($patrolPointId) {
+                $report->forceFill([
+                    'patrol_point_id' => $patrolPointId,
+                ])->save();
+            }
+
             $this->photoUploader->storeMany(
                 $report,
                 $request->file('photos', []),
@@ -135,6 +147,18 @@ class ReportController extends Controller
                 'action' => 'created',
                 'note' => 'Laporan dibuat oleh pelapor.',
             ]);
+
+            if ($patrolPointId) {
+                PatrolLog::query()->create([
+                    'patrol_point_id' => $patrolPointId,
+                    'user_id' => $user->id,
+                    'subak_id' => $subakId,
+                    'report_id' => $report->id,
+                    'status' => 'damaged',
+                    'patrol_date' => Carbon::today(),
+                    'scanned_at' => now(),
+                ]);
+            }
 
             return $report;
         });

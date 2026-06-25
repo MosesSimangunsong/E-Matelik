@@ -1,0 +1,32 @@
+flowchart TD
+    A([Mulai]) --> B[Admin login]
+    B --> C[Masuk dashboard Admin]
+    C --> D{Pilih aktivitas}
+
+    D -->|Monitoring| E[Lihat statistik global laporan]
+    E --> F[Buka daftar semua laporan]
+    F --> G[Gunakan filter status, kategori, atau prioritas]
+    G --> Z([Selesai])
+
+    D -->|Tindak Lanjut Laporan| H[Buka detail laporan]
+    H --> I[Tinjau metadata, peta, bukti awal, bukti penyelesaian]
+    I --> J[Isi status baru dan catatan tindak lanjut]
+    J --> K{Perlu penutupan?}
+    K -->|Tidak| L[Simpan update status]
+    K -->|Ya| M[Isi catatan penyelesaian dan upload foto penyelesaian]
+    M --> N[Simpan status selesai]
+    L --> O[Sistem menyimpan histori]
+    N --> O
+    O --> Z
+
+    D -->|Kelola Data Master| P[Buka modul kategori atau user]
+    P --> Q{Kelola apa?}
+    Q -->|Kategori| R[Tambah atau ubah kategori]
+    Q -->|User| S[Tambah atau ubah user]
+    R --> T[Simpan perubahan]
+    S --> T
+    T --> Z
+
+    D -->|Audit| U[Buka histori sistem]
+    U --> V[Tinjau jejak aktivitas administratif]
+    V --> Z

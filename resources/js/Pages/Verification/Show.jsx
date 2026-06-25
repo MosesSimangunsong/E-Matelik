@@ -52,9 +52,17 @@ export default function VerificationShow({ report, verdictOptions, verificationG
                             <span className="text-sm text-neutral-500">{report.submitted_at}</span>
                         </div>
                     </div>
-                    <Link href={route('verification.index')}>
-                        <SecondaryButton className="w-full sm:w-auto">Kembali ke Daftar Verifikasi</SecondaryButton>
-                    </Link>
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                        <a
+                            href={route('verification.pdf', report.id)}
+                            className="btn-secondary inline-flex w-full items-center justify-center sm:w-auto"
+                        >
+                            Unduh PDF
+                        </a>
+                        <Link href={route('verification.index')}>
+                            <SecondaryButton className="w-full sm:w-auto">Kembali ke Daftar Verifikasi</SecondaryButton>
+                        </Link>
+                    </div>
                 </div>
             }
         >

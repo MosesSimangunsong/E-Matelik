@@ -2,13 +2,12 @@ import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 
 export default function Show({ report }) {
-    // Fungsi pembantu untuk merender status dengan warna yang sesuai
     const renderStatusBadge = (status) => {
         let bgColor = 'bg-gray-100 text-gray-800';
-        if (status?.slug === 'completed') bgColor = 'bg-green-100 text-green-800';
-        else if (status?.slug === 'verified') bgColor = 'bg-blue-100 text-blue-800';
-        else if (status?.slug === 'escalated') bgColor = 'bg-red-100 text-red-800';
-        else if (status?.slug === 'pending_verification') bgColor = 'bg-yellow-100 text-yellow-800';
+        if (status?.slug === 'selesai') bgColor = 'bg-green-100 text-green-800';
+        else if (status?.slug === 'diverifikasi') bgColor = 'bg-blue-100 text-blue-800';
+        else if (status?.slug === 'diekskalasi') bgColor = 'bg-red-100 text-red-800';
+        else if (status?.slug === 'menunggu-verifikasi') bgColor = 'bg-yellow-100 text-yellow-800';
 
         return (
             <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${bgColor}`}>
@@ -59,6 +58,16 @@ export default function Show({ report }) {
                             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                 <dt className="text-sm font-medium text-gray-500">Kategori Insiden</dt>
                                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{report?.category?.name || '-'}</dd>
+                            </div>
+                            <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt className="text-sm font-medium text-gray-500">Nama Pelapor</dt>
+                                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{report?.reporter?.name || '-'}</dd>
+                            </div>
+                            <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt className="text-sm font-medium text-gray-500">Koordinat</dt>
+                                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                    {report?.latitude}, {report?.longitude}
+                                </dd>
                             </div>
                             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                 <dt className="text-sm font-medium text-gray-500">Keterangan Laporan</dt>
@@ -112,7 +121,7 @@ export default function Show({ report }) {
                         <strong>Perhatian:</strong> Dokumen ini adalah <span className="font-semibold text-gray-700">Kapsul Bukti Administratif Ber-QR</span> yang diterbitkan oleh sistem E-Matelik. 
                         Sistem ini berfungsi sebagai alat bantu dokumentasi dan pelacakan administratif (closed-loop evidence). 
                         Dokumen ini <strong>bukan</strong> pengganti tata kelola adat yang sah dan <strong>bukan</strong> alat bukti hukum final. 
-                        Identitas pelapor sengaja disamarkan pada tampilan publik ini demi menjaga privasi dan keamanan krama.
+                        Dokumen ini ditujukan untuk transparansi administratif dan bukan bukti forensik final.
                     </p>
                     <div className="mt-6">
                         <Link href="/" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">

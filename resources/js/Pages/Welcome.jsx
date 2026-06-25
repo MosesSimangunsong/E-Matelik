@@ -1,7 +1,13 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
+import PublicReportsSection from '@/Components/public/PublicReportsSection';
 
-export default function Welcome({ canLogin, canRegister }) {
+export default function Welcome({ canLogin, canRegister, reports = [], summary = {} }) {
+    const logoPath = '/assets/img/e-matelik%20logo.png';
+    const waMessage = encodeURIComponent('Halo, saya ingin melaporkan gangguan telabah melalui E-Matelik.');
+    const waPekaseh = `https://wa.me/628xxxxxxxxxx?text=${waMessage}`;
+    const waPelapor = `https://wa.me/628xxxxxxxxxx?text=${waMessage}`;
+
     return (
         <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 font-sans selection:bg-emerald-200 selection:text-emerald-900 antialiased">
             <Head title="E-Matelik - Pengawasan Telabah Subak" />
@@ -10,20 +16,18 @@ export default function Welcome({ canLogin, canRegister }) {
             <header className="fixed top-0 inset-x-0 z-50 bg-[#FAFAFA]/80 backdrop-blur-md border-b border-zinc-200/60">
                 <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        {/* Placeholder Logo */}
                         <img 
-                            src="/images/logo-ematelik.png" 
-                            alt="Logo E-Matelik" 
+                            src={logoPath}
+                            alt="E-Matelik Logo" 
                             className="h-8 w-auto object-contain"
-                            onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%23059669' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5z'/%3E%3Cpath d='M2 17l10 5 10-5'/%3E%3Cpath d='M2 12l10 5 10-5'/%3E%3C/svg%3E";
-                            }}
                         />
                         <span className="font-semibold tracking-tight text-lg text-zinc-800">E-Matelik</span>
                     </div>
 
-                    <nav className="flex items-center gap-6 text-sm font-medium">
+                    <nav className="flex items-center gap-4 text-sm font-medium">
+                        <a href="#laporan-publik" className="text-zinc-500 hover:text-zinc-900 transition-colors">
+                            Dashboard Publik
+                        </a>
                         {canLogin && (
                             <>
                                 <Link href={route('login')} className="text-zinc-500 hover:text-zinc-900 transition-colors">
@@ -47,6 +51,13 @@ export default function Welcome({ canLogin, canRegister }) {
                 
                 {/* 1. HERO SECTION */}
                 <section className="max-w-4xl mx-auto px-6 text-center pt-16 pb-24">
+                    <div className="mb-8 flex justify-center">
+                        <img
+                            src={logoPath}
+                            alt="E-Matelik Logo"
+                            className="h-20 w-auto object-contain"
+                        />
+                    </div>
                     <h1 className="text-5xl md:text-6xl font-bold tracking-tighter text-zinc-900 leading-[1.1] mb-6">
                         Pengawasan telabah Subak yang lebih tertib dan terdokumentasi.
                     </h1>
@@ -60,6 +71,30 @@ export default function Welcome({ canLogin, canRegister }) {
                         >
                             Mulai Gunakan Sistem
                         </Link>
+                        <a
+                            href="#laporan-publik"
+                            className="w-full sm:w-auto border border-zinc-300 px-8 py-3.5 rounded-full font-medium text-zinc-700 hover:bg-white transition-colors"
+                        >
+                            Lihat Dashboard Publik
+                        </a>
+                    </div>
+                    <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-3">
+                        <a
+                            href={waPekaseh}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full sm:w-auto rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-700 transition-colors"
+                        >
+                            Hubungi Pekaseh
+                        </a>
+                        <a
+                            href={waPelapor}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full sm:w-auto rounded-full border border-emerald-200 bg-white px-6 py-3 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 transition-colors"
+                        >
+                            Hubungi Pelapor
+                        </a>
                     </div>
 
                     {/* Hero Visual Placeholder */}
@@ -182,6 +217,8 @@ export default function Welcome({ canLogin, canRegister }) {
                     </div>
                 </section>
 
+                <PublicReportsSection reports={reports} summary={summary} />
+
             </main>
 
             {/* 6. FOOTER */}
@@ -202,15 +239,10 @@ export default function Welcome({ canLogin, canRegister }) {
 
                     <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-zinc-100">
                         <div className="flex items-center gap-2 mb-4 md:mb-0 grayscale opacity-60">
-                            {/* Placeholder Logo Footer */}
                             <img 
-                                src="/images/logo-ematelik.png" 
-                                alt="Logo E-Matelik" 
+                                src={logoPath}
+                                alt="E-Matelik Logo" 
                                 className="h-6 w-auto object-contain"
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5z'/%3E%3Cpath d='M2 17l10 5 10-5'/%3E%3Cpath d='M2 12l10 5 10-5'/%3E%3C/svg%3E";
-                                }}
                             />
                             <span className="font-semibold text-sm tracking-tight text-zinc-900">E-Matelik</span>
                         </div>

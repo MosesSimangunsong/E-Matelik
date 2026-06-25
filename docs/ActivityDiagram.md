@@ -1,0 +1,55 @@
+# Activity Diagram - E-Matelik
+
+## Ringkasan
+
+Activity diagram ini merangkum alur operasional utama sistem, terutama integrasi patroli QR dengan pelaporan dan verifikasi.
+
+## Mermaid
+
+```mermaid
+flowchart TD
+    A([Mulai]) --> B[Pengguna login]
+    B --> C{Role pengguna}
+
+    C -->|Pelapor| D[Masuk dashboard patroli]
+    D --> E{Scan QR atau laporan manual?}
+
+    E -->|Scan QR| F[Izinkan kamera]
+    F --> G[QR valid dibaca]
+    G --> H[Halaman inspeksi checkpoint]
+    H --> I{Kondisi titik}
+    I -->|Aman / Atensi| J[Simpan patrol log]
+    I -->|Rusak| K[Buka form laporan dengan prefill QR]
+    K --> L[Isi deskripsi dan unggah foto]
+    L --> M[Simpan report + patrol log damaged]
+    J --> Z([Selesai])
+    M --> Z
+
+    E -->|Laporan manual| N[Buka form laporan]
+    N --> O[Pilih titik di peta / lokasi saat ini]
+    O --> P[Unggah foto bukti]
+    P --> Q[Simpan report status menunggu-verifikasi]
+    Q --> Z
+
+    C -->|Pekaseh| R[Masuk dashboard Pekaseh]
+    R --> S[Lihat statistik patroli dan backlog]
+    S --> T{Kelola titik atau verifikasi?}
+    T -->|Kelola titik| U[Tambah/Edit titik patroli]
+    U --> V[Simpan patrol point]
+    V --> Z
+    T -->|Verifikasi| W[Buka detail laporan]
+    W --> X[Pilih verdict dan isi catatan]
+    X --> Y[Update status + history + optional resolution photo]
+    Y --> Z
+
+    C -->|Admin| AA[Masuk dashboard admin]
+    AA --> AB[Buka daftar laporan]
+    AB --> AC[Update status atau data master]
+    AC --> AD[Simpan perubahan dan histori]
+    AD --> Z
+```
+
+## Catatan
+
+* Alur patroli QR dan pelaporan manual tetap dipisahkan agar kontrol integritas lokasi lebih baik.
+* Pembuatan `patrol_logs` `damaged` hanya terjadi bila laporan dibuat dari checkpoint QR.

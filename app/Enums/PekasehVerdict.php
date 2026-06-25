@@ -8,6 +8,7 @@ enum PekasehVerdict: string
     case NeedsClarification = 'perlu_klarifikasi';
     case Escalate = 'eskalasi';
     case CompletedInternal = 'selesai_internal';
+    case Rejected = 'ditolak';
 
     public static function values(): array
     {
@@ -21,6 +22,7 @@ enum PekasehVerdict: string
             self::NeedsClarification => 'clarification_requested',
             self::Escalate => 'escalated',
             self::CompletedInternal => 'completed_internal',
+            self::Rejected => 'rejected',
         };
     }
 
@@ -31,6 +33,7 @@ enum PekasehVerdict: string
             self::NeedsClarification => ReportStatusSlug::NeedsClarification,
             self::Escalate => ReportStatusSlug::Escalated,
             self::CompletedInternal => ReportStatusSlug::Completed,
+            self::Rejected => ReportStatusSlug::Rejected,
         };
     }
 }

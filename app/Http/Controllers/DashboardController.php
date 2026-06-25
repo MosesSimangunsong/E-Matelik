@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\RoleSlug;
 use App\Enums\ReportStatusSlug;
+use App\Models\PatrolLog;
+use App\Models\PatrolPoint;
 use App\Models\Report;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -76,9 +79,18 @@ class DashboardController extends Controller
     public function pekaseh(Request $request): Response
     {
         $user = $request->user()->loadMissing('subak');
+        $today = Carbon::today();
 
         $pendingReports = collect();
         $overdueThreshold = now()->subDay();
+        $statistics = [
+            'total' => 0,
+            'checked' => 0,
+            'safe' => 0,
+            'needs_attention' => 0,
+            'damaged' => 0,
+            'unchecked' => 0,
+        ];
 
         if ($user->subak_id) {
             $pendingReports = Report::query()
@@ -88,6 +100,49 @@ class DashboardController extends Controller
                 ->latest('submitted_at')
                 ->limit(3)
                 ->get();
+
+            $rawPoints = PatrolPoint::query()
+                ->where('subak_id', $user->subak_id)
+                ->where('is_active', true)
+                ->get(['id']);
+
+            $statistics['total'] = $rawPoints->count();
+
+            foreach ($rawPoints as $point) {
+                $hasDamageReportToday = Report::query()
+                    ->where('patrol_point_id', $point->id)
+                    ->whereDate('created_at', $today)
+                    ->exists();
+
+                if ($hasDamageReportToday) {
+                    $statistics['damaged']++;
+                    $statistics['checked']++;
+
+                    continue;
+                }
+
+                $logToday = PatrolLog::query()
+                    ->where('patrol_point_id', $point->id)
+                    ->whereDate('patrol_date', $today)
+                    ->latest('scanned_at')
+                    ->first(['status']);
+
+                if (! $logToday) {
+                    $statistics['unchecked']++;
+
+                    continue;
+                }
+
+                $statistics['checked']++;
+
+                if ($logToday->status === 'safe') {
+                    $statistics['safe']++;
+                } elseif ($logToday->status === 'needs_attention') {
+                    $statistics['needs_attention']++;
+                } elseif ($logToday->status === 'damaged') {
+                    $statistics['damaged']++;
+                }
+            }
         }
 
         $overduePendingCount = $user->subak_id
@@ -119,6 +174,7 @@ class DashboardController extends Controller
                     'headline' => 'Laporan berfungsi sebagai sinyal awal yang perlu diverifikasi.',
                     'fallbackNote' => 'Jika ada laporan yang tertahan terlalu lama, itu menjadi penanda backlog untuk koordinasi atau pendampingan proses berikutnya.',
                 ],
+                'statistics' => $statistics,
                 'recentReports' => $pendingReports->map(fn (Report $report) => [
                     'id' => $report->id,
                     'title' => $report->title,
@@ -127,6 +183,7 @@ class DashboardController extends Controller
                     'is_overdue' => optional($report->submitted_at)->lt($overdueThreshold) ?? false,
                 ]),
             ],
+            'statistics' => $statistics,
         ]);
     }
 

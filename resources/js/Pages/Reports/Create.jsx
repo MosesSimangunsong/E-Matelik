@@ -6,6 +6,7 @@ import SecondaryButton from "@/Components/SecondaryButton";
 import TextInput from "@/Components/TextInput";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
+import { useEffect, useState } from "react";
 
 export default function Create({
     auth,
@@ -14,14 +15,24 @@ export default function Create({
     reportDefaults,
     prefill_data,
 }) {
+    const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+    const [locationError, setLocationError] = useState("");
+    const [photoPreviews, setPhotoPreviews] = useState([]);
+    const hasQrPrefill =
+        Boolean(prefill_data?.patrol_point_id) &&
+        prefill_data?.latitude !== undefined &&
+        prefill_data?.latitude !== null &&
+        prefill_data?.longitude !== undefined &&
+        prefill_data?.longitude !== null;
+
     const { data, setData, post, processing, errors } = useForm({
         title: "",
         category_id: "",
         subak_id: reportDefaults.subakId ? String(reportDefaults.subakId) : "",
         description: "",
-        latitude: prefill_data?.latitude || "",
-        longitude: prefill_data?.longitude || "",
-        patrol_point_id: prefill_data?.patrol_point_id || null,
+        latitude: prefill_data?.latitude ?? "",
+        longitude: prefill_data?.longitude ?? "",
+        patrol_point_id: prefill_data?.patrol_point_id ?? "",
         address_text: "",
         photos: [],
     });
@@ -30,6 +41,20 @@ export default function Create({
         e.preventDefault();
         post(route("reports.store"));
     };
+
+    useEffect(() => {
+        const previews = data.photos.map((file) => ({
+            id: `${file.name}-${file.lastModified}-${file.size}`,
+            name: file.name,
+            url: URL.createObjectURL(file),
+        }));
+
+        setPhotoPreviews(previews);
+
+        return () => {
+            previews.forEach((preview) => URL.revokeObjectURL(preview.url));
+        };
+    }, [data.photos]);
 
     const requiresSubakSelection = !reportDefaults.subakId;
     const selectedPoint =
@@ -41,8 +66,63 @@ export default function Create({
             : null;
 
     const handleMapPick = ({ lat, lng }) => {
+        setLocationError("");
         setData("latitude", lat.toFixed(7));
         setData("longitude", lng.toFixed(7));
+    };
+
+    const useCurrentLocation = () => {
+        if (hasQrPrefill) {
+            return;
+        }
+
+        if (!("geolocation" in navigator)) {
+            setLocationError(
+                "Browser Anda tidak mendukung geolocation. Gunakan pemilihan titik manual di peta.",
+            );
+            return;
+        }
+
+        setIsFetchingLocation(true);
+        setLocationError("");
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setData("latitude", position.coords.latitude.toFixed(7));
+                setData("longitude", position.coords.longitude.toFixed(7));
+                setIsFetchingLocation(false);
+            },
+            (error) => {
+                let message =
+                    "Lokasi saat ini gagal diambil. Silakan coba lagi atau pilih titik manual di peta.";
+
+                if (error.code === error.PERMISSION_DENIED) {
+                    message =
+                        "Izin lokasi ditolak. Aktifkan akses lokasi browser lalu coba lagi.";
+                } else if (error.code === error.TIMEOUT) {
+                    message =
+                        "Pengambilan lokasi melebihi batas waktu 10 detik. Pastikan GPS aktif lalu coba lagi.";
+                } else if (error.code === error.POSITION_UNAVAILABLE) {
+                    message =
+                        "Lokasi tidak tersedia saat ini. Coba pindah ke area dengan sinyal lokasi yang lebih baik.";
+                }
+
+                setLocationError(message);
+                setIsFetchingLocation(false);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0,
+            },
+        );
+    };
+
+    const removePhoto = (indexToRemove) => {
+        setData(
+            "photos",
+            data.photos.filter((_, index) => index !== indexToRemove),
+        );
     };
 
     return (
@@ -79,42 +159,87 @@ export default function Create({
                             Form dibuat lebih lega agar nyaman diisi dari HP.
                         </div>
 
-                        <div className="space-y-4">
-                            <div>
-                                <p className="eyebrow">Pilih titik insiden</p>
-                                <h3 className="mt-2 text-xl font-semibold text-neutral-900">
-                                    Ketuk peta untuk mengisi koordinat otomatis
-                                </h3>
+                        {hasQrPrefill && (
+                            <div className="rounded-card border border-indigo-200 bg-indigo-50 px-4 py-4 text-sm leading-7 text-indigo-700">
+                                <span className="font-semibold">
+                                    Mode Patroli Aktif:
+                                </span>{" "}
+                                laporan ini berasal dari scan QR checkpoint.
+                                Koordinat dan titik patroli sudah diisi otomatis
+                                dari hasil pemindaian.
                             </div>
-                            <LeafletMap
-                                selectable
-                                onPick={handleMapPick}
-                                selectedPoint={selectedPoint}
-                                center={
-                                    selectedPoint
-                                        ? [
-                                              selectedPoint.latitude,
-                                              selectedPoint.longitude,
-                                          ]
-                                        : [-8.65, 115.216]
-                                }
-                                zoom={selectedPoint ? 15 : 12}
-                                heightClass="h-[360px]"
-                            />
-                            <p className="text-sm text-neutral-500">
-                                Peta menggunakan OpenStreetMap. Anda juga tetap
-                                bisa mengoreksi latitude dan longitude secara
-                                manual bila diperlukan.
-                            </p>
-                            <div className="rounded-soft border border-secondary-100 bg-secondary-50 px-4 py-4 text-sm leading-7 text-secondary-700">
-                                Laporan Anda diperlakukan sebagai sinyal awal
-                                yang akan diverifikasi, bukan kebenaran final.
-                                Gunakan foto dan deskripsi yang relevan agar
-                                proses klarifikasi lebih cepat.
+                        )}
+
+                        {!hasQrPrefill && (
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="eyebrow">
+                                        Pilih titik insiden
+                                    </p>
+                                    <h3 className="mt-2 text-xl font-semibold text-neutral-900">
+                                        Ketuk peta untuk mengisi koordinat
+                                        otomatis
+                                    </h3>
+                                </div>
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                                    <button
+                                        type="button"
+                                        onClick={useCurrentLocation}
+                                        disabled={isFetchingLocation}
+                                        className="inline-flex items-center justify-center rounded-full border border-primary-200 bg-white px-5 py-2.5 text-sm font-semibold text-primary-700 transition hover:border-primary-300 hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-60"
+                                    >
+                                        {isFetchingLocation
+                                            ? "Mengambil lokasi..."
+                                            : "Gunakan Lokasi Saat Ini"}
+                                    </button>
+                                    <p className="text-sm text-neutral-500">
+                                        Lokasi perangkat akan mengisi latitude,
+                                        longitude, dan memindahkan marker ke
+                                        posisi Anda.
+                                    </p>
+                                </div>
+                                {locationError && (
+                                    <div className="rounded-soft border border-rose-200 bg-rose-50 px-4 py-3 text-sm leading-6 text-rose-700">
+                                        {locationError}
+                                    </div>
+                                )}
+                                <LeafletMap
+                                    selectable
+                                    onPick={handleMapPick}
+                                    selectedPoint={selectedPoint}
+                                    center={
+                                        selectedPoint
+                                            ? [
+                                                  selectedPoint.latitude,
+                                                  selectedPoint.longitude,
+                                              ]
+                                            : [-8.65, 115.216]
+                                    }
+                                    zoom={selectedPoint ? 15 : 12}
+                                    heightClass="h-[360px]"
+                                />
+                                <p className="text-sm text-neutral-500">
+                                    Peta menggunakan OpenStreetMap. Anda juga
+                                    tetap bisa mengoreksi latitude dan longitude
+                                    secara manual bila diperlukan.
+                                </p>
+                                <div className="rounded-soft border border-secondary-100 bg-secondary-50 px-4 py-4 text-sm leading-7 text-secondary-700">
+                                    Laporan Anda diperlakukan sebagai sinyal
+                                    awal yang akan diverifikasi, bukan
+                                    kebenaran final. Gunakan foto dan deskripsi
+                                    yang relevan agar proses klarifikasi lebih
+                                    cepat.
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         <div className="grid gap-5 md:grid-cols-2">
+                            <input
+                                type="hidden"
+                                value={data.patrol_point_id}
+                                readOnly
+                            />
+
                             <div className="md:col-span-2">
                                 <InputLabel
                                     htmlFor="title"
@@ -209,6 +334,7 @@ export default function Create({
                                         setData("latitude", e.target.value)
                                     }
                                     placeholder="-8.6500000"
+                                    readOnly={hasQrPrefill}
                                 />
                                 <InputError
                                     className="mt-2"
@@ -229,6 +355,7 @@ export default function Create({
                                         setData("longitude", e.target.value)
                                     }
                                     placeholder="115.2160000"
+                                    readOnly={hasQrPrefill}
                                 />
                                 <InputError
                                     className="mt-2"
@@ -299,6 +426,36 @@ export default function Create({
                                         {data.photos.length} foto dipilih.
                                     </p>
                                 )}
+                                {photoPreviews.length > 0 && (
+                                    <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                                        {photoPreviews.map((photo, index) => (
+                                            <div
+                                                key={photo.id}
+                                                className="overflow-hidden rounded-card border border-neutral-200 bg-white shadow-sm"
+                                            >
+                                                <img
+                                                    src={photo.url}
+                                                    alt={photo.name}
+                                                    className="h-44 w-full object-cover"
+                                                />
+                                                <div className="space-y-3 px-4 py-3">
+                                                    <p className="truncate text-sm font-semibold text-neutral-900">
+                                                        {photo.name}
+                                                    </p>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            removePhoto(index)
+                                                        }
+                                                        className="inline-flex items-center rounded-full border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
+                                                    >
+                                                        Hapus foto
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                                 <InputError
                                     className="mt-2"
                                     message={errors.photos}
@@ -328,30 +485,18 @@ export default function Create({
                         </div>
                     </form>
 
-                    {data.patrol_point_id && (
-                        <div className="mb-4 p-4 bg-indigo-50 border border-indigo-200 rounded-md">
-                            <p className="text-sm text-indigo-700 font-medium">
-                                <span className="font-bold">
-                                    Mode Patroli Aktif:
-                                </span>{" "}
-                                Laporan ini ditautkan secara otomatis ke titik
-                                pemeriksaan Matelik. Koordinat lokasi telah
-                                dikunci sesuai dengan titik inspeksi.
-                            </p>
-                        </div>
-                    )}
-
                     <aside className="space-y-6">
                         <div className="app-card">
                             <p className="eyebrow">Tahap 7 WebGIS</p>
                             <h3 className="mt-3 text-xl font-semibold text-neutral-900">
-                                Koordinat sekarang bisa dipilih langsung dari
-                                peta interaktif.
+                                {hasQrPrefill
+                                    ? "Koordinat checkpoint sudah dibawa otomatis dari hasil scan QR."
+                                    : "Koordinat sekarang bisa dipilih langsung dari peta interaktif."}
                             </h3>
                             <p className="mt-3 body-copy">
-                                Marker yang Anda pilih akan menjadi dasar lokasi
-                                laporan, lalu dipakai lagi pada halaman detail
-                                dan peta insiden.
+                                {hasQrPrefill
+                                    ? "Form ini tetap bisa dipakai seperti biasa untuk melaporkan kerusakan, tetapi lokasi patroli tidak perlu dipilih ulang agar tetap konsisten dengan checkpoint yang dipindai."
+                                    : "Marker yang Anda pilih akan menjadi dasar lokasi laporan, lalu dipakai lagi pada halaman detail dan peta insiden."}
                             </p>
                         </div>
 

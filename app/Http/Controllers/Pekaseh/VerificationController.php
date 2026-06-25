@@ -12,6 +12,7 @@ use App\Models\ReportHistory;
 use App\Models\ReportStatus;
 use App\Support\ReportPhotoUploader;
 use App\Support\ReporterIdentityPresenter;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -124,34 +125,15 @@ class VerificationController extends Controller
                     'village' => $report->subak->village,
                     'district' => $report->subak->district,
                 ] : null,
-                'photos' => $report->photos->map(fn ($photo) => [
-                    'id' => $photo->id,
-                    'url' => Storage::disk('public')->url($photo->photo_path),
-                    'name' => $photo->original_name,
-                    'photo_role' => $photo->photo_role?->value,
-                    'captured_from' => $photo->captured_from?->value,
-                    'uploaded_at' => optional($photo->created_at)->format('d M Y H:i'),
-                ])->values(),
+                'photos' => $report->photos->map(fn ($photo) => $this->transformPhoto($photo))->values(),
                 'initial_photos' => $report->photos
                     ->filter(fn ($photo) => $photo->photo_role?->value === 'initial_evidence')
                     ->values()
-                    ->map(fn ($photo) => [
-                        'id' => $photo->id,
-                        'url' => Storage::disk('public')->url($photo->photo_path),
-                        'name' => $photo->original_name,
-                        'captured_from' => $photo->captured_from?->value,
-                        'uploaded_at' => optional($photo->created_at)->format('d M Y H:i'),
-                    ]),
+                    ->map(fn ($photo) => $this->transformPhoto($photo)),
                 'resolution_photos' => $report->photos
                     ->filter(fn ($photo) => $photo->photo_role?->value === 'resolution_evidence')
                     ->values()
-                    ->map(fn ($photo) => [
-                        'id' => $photo->id,
-                        'url' => Storage::disk('public')->url($photo->photo_path),
-                        'name' => $photo->original_name,
-                        'captured_from' => $photo->captured_from?->value,
-                        'uploaded_at' => optional($photo->created_at)->format('d M Y H:i'),
-                    ]),
+                    ->map(fn ($photo) => $this->transformPhoto($photo)),
                 'evidence' => [
                     'initial_count' => $report->photos->filter(fn ($photo) => $photo->photo_role?->value === 'initial_evidence')->count(),
                     'resolution_count' => $report->photos->filter(fn ($photo) => $photo->photo_role?->value === 'resolution_evidence')->count(),
@@ -176,6 +158,7 @@ class VerificationController extends Controller
                 ['value' => PekasehVerdict::NeedsClarification->value, 'label' => 'Perlu Klarifikasi', 'mapsTo' => 'Perlu Klarifikasi'],
                 ['value' => PekasehVerdict::Escalate->value, 'label' => 'Eskalasi Administratif Lanjutan', 'mapsTo' => 'Diekskalasi'],
                 ['value' => PekasehVerdict::CompletedInternal->value, 'label' => 'Selesai Internal', 'mapsTo' => 'Selesai'],
+                ['value' => PekasehVerdict::Rejected->value, 'label' => 'Ditolak', 'mapsTo' => 'Ditolak'],
             ],
             'verificationGuidance' => [
                 'headline' => 'Keputusan Pekaseh menyimpan jejak administratif awal.',
@@ -183,6 +166,78 @@ class VerificationController extends Controller
                 'escalationNote' => 'Gunakan eskalasi bila kasus siap dibawa ke koordinasi administratif lanjutan sesuai konteks kelembagaan.',
             ],
         ]);
+    }
+
+    public function downloadPdf(Request $request, Report $report)
+    {
+        $this->ensureReportBelongsToPekasehSubak($request, $report);
+
+        $report->load([
+            'user:id,name,email',
+            'subak:id,name,region,village,district',
+            'category:id,name,description',
+            'status:id,name,slug,description',
+            'resolver:id,name',
+            'photos:id,report_id,photo_path,original_name,mime_type,file_size,photo_role,file_hash,captured_from,created_at',
+            'histories.user:id,name',
+            'histories.fromStatus:id,name',
+            'histories.toStatus:id,name',
+        ]);
+
+        $pdfReport = [
+            'report_code' => $report->report_code,
+            'title' => $report->title,
+            'description' => $report->description,
+            'latitude' => $report->latitude,
+            'longitude' => $report->longitude,
+            'address_text' => $report->address_text,
+            'submitted_at' => optional($report->submitted_at)->format('d M Y H:i'),
+            'verification_note' => $report->verification_note,
+            'resolution_note' => $report->resolution_note,
+            'resolved_at' => optional($report->resolved_at)->format('d M Y H:i'),
+            'priority_level' => $report->priority_level?->value,
+            'reporter' => $this->reporterIdentityPresenter->forPrivileged($report->user),
+            'category' => $report->category ? [
+                'name' => $report->category->name,
+                'description' => $report->category->description,
+            ] : null,
+            'status' => $report->status ? [
+                'name' => $report->status->name,
+                'slug' => $report->status->slug,
+            ] : null,
+            'subak' => $report->subak ? [
+                'name' => $report->subak->name,
+                'region' => $report->subak->region,
+                'village' => $report->subak->village,
+                'district' => $report->subak->district,
+            ] : null,
+            'initial_photos' => $report->photos
+                ->filter(fn ($photo) => $photo->photo_role?->value === 'initial_evidence')
+                ->values()
+                ->map(fn ($photo) => $this->transformPhoto($photo, true))
+                ->all(),
+            'resolution_photos' => $report->photos
+                ->filter(fn ($photo) => $photo->photo_role?->value === 'resolution_evidence')
+                ->values()
+                ->map(fn ($photo) => $this->transformPhoto($photo, true))
+                ->all(),
+            'history' => $report->histories
+                ->sortByDesc('created_at')
+                ->values()
+                ->map(fn (ReportHistory $history) => [
+                    'created_at' => optional($history->created_at)->format('d M Y H:i'),
+                    'actor' => $history->user?->name,
+                    'action' => $history->action,
+                    'to_status' => $history->toStatus?->name,
+                    'note' => $history->note,
+                ])
+                ->all(),
+        ];
+
+        return Pdf::loadView('pdf.verification-report', [
+            'report' => $pdfReport,
+            'generatedAt' => now()->format('d M Y H:i'),
+        ])->setPaper('a4')->download('laporan-'.$report->report_code.'.pdf');
     }
 
     public function update(VerifyReportRequest $request, Report $report): RedirectResponse
@@ -248,5 +303,29 @@ class VerificationController extends Controller
         $user = $request->user();
 
         abort_unless($user->subak_id && $report->subak_id === $user->subak_id, 403);
+    }
+
+    private function transformPhoto($photo, bool $includeAbsolutePath = false): array
+    {
+        $photoUrl = Storage::disk('public')->url($photo->photo_path);
+
+        $payload = [
+            'id' => $photo->id,
+            'original_name' => $photo->original_name,
+            'name' => $photo->original_name,
+            'photo_path' => $photo->photo_path,
+            'photo_url' => $photoUrl,
+            'url' => $photoUrl,
+            'photo_role' => $photo->photo_role?->value,
+            'captured_from' => $photo->captured_from?->value,
+            'created_at' => optional($photo->created_at)->toIso8601String(),
+            'uploaded_at' => optional($photo->created_at)->format('d M Y H:i'),
+        ];
+
+        if ($includeAbsolutePath && Storage::disk('public')->exists($photo->photo_path)) {
+            $payload['absolute_path'] = Storage::disk('public')->path($photo->photo_path);
+        }
+
+        return $payload;
     }
 }

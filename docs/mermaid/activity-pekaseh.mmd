@@ -1,0 +1,33 @@
+flowchart TD
+    A([Mulai]) --> B[Pekaseh login]
+    B --> C[Masuk dashboard Pekaseh]
+    C --> D{Pilih aktivitas}
+
+    D -->|Monitoring| E[Lihat statistik patroli harian]
+    E --> F[Lihat laporan pending dan backlog]
+    F --> Z([Selesai])
+
+    D -->|Kelola Titik Patroli| G[Buka modul patrol points]
+    G --> H{Tambah atau edit titik?}
+    H -->|Tambah| I[Isi identitas titik]
+    H -->|Edit| J[Ubah data titik]
+    I --> K[Pilih lokasi di peta atau gunakan lokasi saat ini]
+    J --> K
+    K --> L[Simpan titik patroli]
+    L --> M[Sistem membuat atau memperbarui checkpoint QR]
+    M --> Z
+
+    D -->|Verifikasi Laporan| N[Buka daftar verifikasi]
+    N --> O[Pilih laporan pada Subak yang sama]
+    O --> P[Tinjau detail, peta, foto bukti, dan histori]
+    P --> Q{Pilih verdict}
+    Q -->|Valid| R[Update status ke diverifikasi]
+    Q -->|Perlu Klarifikasi| S[Update status ke perlu-klarifikasi]
+    Q -->|Eskalasi Administratif Lanjutan| T[Update status ke diekskalasi]
+    Q -->|Selesai Internal| U[Isi catatan dan opsional foto penyelesaian]
+    U --> V[Update status ke selesai]
+    R --> W[Simpan histori verifikasi]
+    S --> W
+    T --> W
+    V --> W
+    W --> Z

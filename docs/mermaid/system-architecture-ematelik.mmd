@@ -1,0 +1,21 @@
+flowchart LR
+    Browser[Browser User\nPelapor / Pekaseh / Admin]
+    PublicBrowser[Browser Publik]
+    ReactUI[Inertia React Pages]
+    Laravel[Laravel 11 Application]
+    Auth[Auth + Role Middleware]
+    Domain[Reports + Patrol QR + Verification + Admin]
+    Storage[Laravel Public Storage]
+    DB[(Relational Database)]
+    Maps[OpenStreetMap]
+    Device[Camera + Geolocation API]
+
+    Browser --> ReactUI
+    ReactUI --> Laravel
+    Laravel --> Auth
+    Auth --> Domain
+    Domain --> DB
+    Domain --> Storage
+    ReactUI --> Maps
+    ReactUI --> Device
+    PublicBrowser --> Laravel

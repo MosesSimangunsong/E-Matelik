@@ -46,6 +46,16 @@ export default function AuthenticatedLayout({ header, children }) {
                             route().current("verification.show"),
                     },
                     {
+                        label: "Semua Laporan",
+                        href: route("pekaseh.reports.index"),
+                        active: route().current("pekaseh.reports.index"),
+                    },
+                    {
+                        label: "Riwayat Patroli",
+                        href: route("pekaseh.patrol-history.index"),
+                        active: route().current("pekaseh.patrol-history.index"),
+                    },
+                    {
                         label: "Kelola Titik Patroli",
                         href: route("pekaseh.patrol-points.index"),
                         active: route().current("pekaseh.patrol-points.*"),
@@ -64,13 +74,6 @@ export default function AuthenticatedLayout({ header, children }) {
                                 ? route("admin.dashboard")
                                 : route("pekaseh.dashboard"),
                         active: route().current("admin.dashboard"),
-                    },
-                    {
-                        label: "Semua Laporan",
-                        href: route("admin.reports.index"),
-                        active:
-                            route().current("admin.reports.index") ||
-                            route().current("admin.reports.show"),
                     },
                     {
                         label: "Kategori",
@@ -120,8 +123,8 @@ export default function AuthenticatedLayout({ header, children }) {
                                     href={dashboardHref}
                                     className="flex items-center gap-3"
                                 >
-                                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-500 text-white shadow-panel">
-                                        <ApplicationLogo className="block h-6 w-6 fill-current" />
+                                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-panel">
+                                        <ApplicationLogo className="block h-8 w-8 object-contain" />
                                     </span>
                                     <div className="min-w-0">
                                         <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary-600">

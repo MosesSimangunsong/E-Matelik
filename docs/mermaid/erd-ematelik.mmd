@@ -1,94 +1,89 @@
 erDiagram
+    ROLES ||--o{ USERS : has
+    SUBAKS ||--o{ USERS : contains
+    SUBAKS ||--o{ REPORTS : owns
+    SUBAKS ||--o{ PATROL_POINTS : owns
+    SUBAKS ||--o{ PATROL_LOGS : scopes
+    CATEGORIES ||--o{ REPORTS : classifies
+    REPORT_STATUSES ||--o{ REPORTS : assigns
+    USERS ||--o{ REPORTS : creates
+    USERS ||--o{ REPORTS : verifies
+    USERS ||--o{ REPORTS : resolves
+    REPORTS ||--o{ REPORT_PHOTOS : has
+    REPORTS ||--o{ REPORT_HISTORIES : tracks
+    REPORTS }o--|| PATROL_POINTS : originates_from
+    PATROL_POINTS ||--o{ PATROL_LOGS : records
+    PATROL_POINTS ||--o{ REPORTS : referenced_by
+    USERS ||--o{ PATROL_POINTS : creates
+    USERS ||--o{ PATROL_LOGS : scans
+    USERS ||--o{ REPORT_PHOTOS : uploads
+    USERS ||--o{ REPORT_HISTORIES : writes
+    REPORT_STATUSES ||--o{ REPORT_HISTORIES : from_status
+    REPORT_STATUSES ||--o{ REPORT_HISTORIES : to_status
+    REPORTS ||--o{ PATROL_LOGS : linked_when_damaged
+
     ROLES {
         bigint id PK
-        varchar name
-        varchar slug
-        text description
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    SUBAKS {
-        bigint id PK
-        varchar name
-        varchar region
-        varchar village
-        varchar district
-        text description
-        timestamp created_at
-        timestamp updated_at
+        string name
+        string slug
+        string description
     }
 
     USERS {
         bigint id PK
         bigint role_id FK
         bigint subak_id FK
-        varchar name
-        varchar email
-        varchar password
-        varchar phone
+        string name
+        string email
+        string phone
         boolean is_active
-        timestamp email_verified_at
-        timestamp created_at
-        timestamp updated_at
+    }
+
+    SUBAKS {
+        bigint id PK
+        string name
+        string region
+        string village
+        string district
     }
 
     CATEGORIES {
         bigint id PK
-        varchar name
-        varchar slug
-        text description
+        string name
+        string slug
         boolean is_active
-        timestamp created_at
-        timestamp updated_at
     }
 
     REPORT_STATUSES {
         bigint id PK
-        varchar name
-        varchar slug
-        text description
-        timestamp created_at
-        timestamp updated_at
+        string name
+        string slug
     }
 
     REPORTS {
         bigint id PK
-        varchar report_code
+        string report_code
         bigint user_id FK
         bigint subak_id FK
         bigint category_id FK
         bigint status_id FK
+        bigint patrol_point_id FK
         bigint verified_by FK
         bigint resolved_by FK
-        varchar title
-        text description
         decimal latitude
         decimal longitude
-        text address_text
-        varchar priority_level
-        text verification_note
-        text resolution_note
-        timestamp verified_at
-        timestamp resolved_at
-        timestamp submitted_at
-        timestamp created_at
-        timestamp updated_at
+        string priority_level
+        datetime submitted_at
     }
 
     REPORT_PHOTOS {
         bigint id PK
         bigint report_id FK
-        varchar photo_path
-        varchar original_name
-        varchar mime_type
-        bigint file_size
-        varchar photo_role
-        varchar file_hash
-        varchar captured_from
+        string photo_path
+        string original_name
+        string photo_role
+        string captured_from
         bigint uploaded_by FK
-        timestamp created_at
-        timestamp updated_at
     }
 
     REPORT_HISTORIES {
@@ -97,23 +92,32 @@ erDiagram
         bigint user_id FK
         bigint from_status_id FK
         bigint to_status_id FK
-        varchar action
-        text note
-        timestamp created_at
-        timestamp updated_at
+        string action
     }
 
-    ROLES ||--o{ USERS : has
-    SUBAKS ||--o{ USERS : contains
-    SUBAKS ||--o{ REPORTS : owns
-    CATEGORIES ||--o{ REPORTS : classifies
-    REPORT_STATUSES ||--o{ REPORTS : current_status
-    USERS ||--o{ REPORTS : creates
-    USERS ||--o{ REPORTS : verifies
-    USERS ||--o{ REPORTS : resolves
-    REPORTS ||--o{ REPORT_PHOTOS : has
-    USERS ||--o{ REPORT_PHOTOS : uploads
-    REPORTS ||--o{ REPORT_HISTORIES : records
-    USERS ||--o{ REPORT_HISTORIES : performs
-    REPORT_STATUSES ||--o{ REPORT_HISTORIES : from_status
-    REPORT_STATUSES ||--o{ REPORT_HISTORIES : to_status
+    PATROL_POINTS {
+        bigint id PK
+        bigint subak_id FK
+        bigint created_by FK
+        string point_code
+        string name
+        string point_type
+        decimal latitude
+        decimal longitude
+        string qr_token
+        integer patrol_order
+        boolean is_active
+    }
+
+    PATROL_LOGS {
+        bigint id PK
+        bigint patrol_point_id FK
+        bigint user_id FK
+        bigint subak_id FK
+        bigint report_id FK
+        string status
+        date patrol_date
+        datetime scanned_at
+        decimal gps_latitude
+        decimal gps_longitude
+    }

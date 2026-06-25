@@ -1,0 +1,60 @@
+# Use Case Diagram - E-Matelik
+
+## Ringkasan
+
+Diagram ini menggambarkan interaksi utama antara aktor sistem dengan fitur E-Matelik saat ini.
+
+## Mermaid
+
+```mermaid
+flowchart LR
+    Pelapor([Pelapor / Krama])
+    Pekaseh([Pekaseh])
+    Admin([Admin])
+    Publik([Publik])
+
+    subgraph Sistem[E-Matelik]
+        UC1([Login])
+        UC2([Buat Laporan Manual])
+        UC3([Lihat Laporan Sendiri])
+        UC4([Scan QR Patroli])
+        UC5([Simpan Checklist Patroli])
+        UC6([Buat Laporan dari QR Rusak])
+        UC7([Kelola Titik Patroli])
+        UC8([Verifikasi Laporan])
+        UC9([Lihat Statistik Patroli Subak])
+        UC10([Kelola Status Laporan])
+        UC11([Kelola User dan Kategori])
+        UC12([Lihat Histori Sistem])
+        UC13([Buka Kapsul Bukti])
+        UC14([Lihat Peta WebGIS])
+    end
+
+    Pelapor --> UC1
+    Pelapor --> UC2
+    Pelapor --> UC3
+    Pelapor --> UC4
+    Pelapor --> UC5
+    Pelapor --> UC6
+    Pelapor --> UC14
+
+    Pekaseh --> UC1
+    Pekaseh --> UC7
+    Pekaseh --> UC8
+    Pekaseh --> UC9
+    Pekaseh --> UC14
+
+    Admin --> UC1
+    Admin --> UC10
+    Admin --> UC11
+    Admin --> UC12
+    Admin --> UC14
+
+    Publik --> UC13
+```
+
+## Catatan
+
+* `Buat Laporan dari QR Rusak` adalah ekstensi dari patroli checkpoint.
+* `Lihat Peta WebGIS` dapat diakses semua role yang login.
+* `Buka Kapsul Bukti` adalah satu-satunya use case publik tanpa login.

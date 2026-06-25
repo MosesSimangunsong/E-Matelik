@@ -3,6 +3,7 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 
@@ -32,6 +33,19 @@ export default function Login({ status, canResetPassword }) {
             )}
 
             <div className="mb-8 space-y-3">
+                <div className="mb-4 flex items-center gap-3">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-panel">
+                        <ApplicationLogo className="h-10 w-10 object-contain" />
+                    </span>
+                    <div>
+                        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary-600">
+                            E-Matelik
+                        </p>
+                        <p className="text-sm text-neutral-500">
+                            WebGIS Pengawasan Irigasi Subak
+                        </p>
+                    </div>
+                </div>
                 <p className="eyebrow">Masuk ke sistem</p>
                 <h1 className="page-title">Akses dashboard E-Matelik</h1>
                 <p className="body-copy">

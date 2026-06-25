@@ -1,26 +1,18 @@
-# ERD - E-Matelik MVP
+# ERD - E-Matelik
 
-## Entity Relationship Design
+## Tujuan
 
----
+ERD ini mendeskripsikan struktur data aktual E-Matelik setelah integrasi:
 
-## 1. Tujuan ERD
-
-ERD ini mendokumentasikan struktur data yang **benar-benar dipakai** oleh implementasi E-Matelik saat ini.
-
-Fokusnya:
-
-* autentikasi dan role,
-* pelaporan insiden,
+* modul laporan,
 * verifikasi Pekaseh,
-* tracking status,
-* histori aktivitas,
-* closed-loop evidence,
-* dan metadata bukti administratif awal.
+* bukti foto,
+* titik patroli QR,
+* dan log patroli harian.
 
 ---
 
-## 2. Entitas Utama
+## Entitas Utama
 
 1. `roles`
 2. `users`
@@ -30,96 +22,61 @@ Fokusnya:
 6. `reports`
 7. `report_photos`
 8. `report_histories`
+9. `patrol_points`
+10. `patrol_logs`
 
 ---
 
-## 3. Tabel dan Fungsi
+## Ringkasan Tabel
 
-### 3.1 `roles`
+### `roles`
 
-Menyimpan role aplikasi.
+Menyimpan role aplikasi:
 
-Kolom utama:
-
-* `id`
-* `name`
-* `slug`
-* `description`
-* `created_at`
-* `updated_at`
-
-Role aktif saat ini:
-
-* `pelapor`
-* `pekaseh`
 * `admin`
+* `pekaseh`
+* `pelapor`
 
-### 3.2 `users`
+### `users`
 
-Menyimpan akun pengguna sistem.
+Menyimpan akun pengguna.
 
-Kolom utama:
+Kolom penting:
 
-* `id`
 * `role_id`
 * `subak_id`
 * `name`
 * `email`
-* `password`
 * `phone`
+* `password`
 * `is_active`
-* `email_verified_at`
-* `remember_token`
-* `created_at`
-* `updated_at`
 
-Catatan:
+### `subaks`
 
-* pelapor terhubung ke satu Subak,
-* Pekaseh terhubung ke satu Subak,
-* admin dapat `subak_id = null`.
+Menyimpan identitas wilayah Subak.
 
-### 3.3 `subaks`
+Kolom penting:
 
-Menyimpan konteks Subak untuk user dan laporan.
-
-Kolom utama:
-
-* `id`
 * `name`
 * `region`
 * `village`
 * `district`
 * `description`
-* `created_at`
-* `updated_at`
 
-### 3.4 `categories`
+### `categories`
 
 Menyimpan kategori gangguan.
 
-Kolom utama:
+Kolom penting:
 
-* `id`
 * `name`
 * `slug`
 * `description`
 * `is_active`
-* `created_at`
-* `updated_at`
 
-### 3.5 `report_statuses`
+### `report_statuses`
 
-Menyimpan daftar status sistem.
-
-Kolom utama:
-
-* `id`
-* `name`
-* `slug`
-* `description`
-* `created_at`
-* `updated_at`
+Menyimpan status administratif laporan.
 
 Status aktif:
 
@@ -131,18 +88,18 @@ Status aktif:
 * `selesai`
 * `ditolak`
 
-### 3.6 `reports`
+### `reports`
 
-Tabel inti laporan.
+Entitas inti laporan gangguan.
 
-Kolom utama:
+Kolom penting:
 
-* `id`
 * `report_code`
 * `user_id`
 * `subak_id`
 * `category_id`
 * `status_id`
+* `patrol_point_id`
 * `verified_by`
 * `resolved_by`
 * `title`
@@ -156,178 +113,115 @@ Kolom utama:
 * `verified_at`
 * `resolved_at`
 * `submitted_at`
-* `created_at`
-* `updated_at`
 
-Catatan:
+### `report_photos`
 
-* `verified_by` dipakai untuk keputusan verifikasi Pekaseh,
-* `resolved_by` dipakai saat ada penyelesaian,
-* `resolution_note` dan `resolved_at` mendukung closed-loop evidence,
-* geometri masih berupa point anchor (`latitude`, `longitude`).
+Menyimpan foto laporan.
 
-### 3.7 `report_photos`
+Kolom penting:
 
-Menyimpan foto bukti laporan.
-
-Kolom utama:
-
-* `id`
 * `report_id`
 * `photo_path`
 * `original_name`
 * `mime_type`
 * `file_size`
+* `uploaded_by`
 * `photo_role`
 * `file_hash`
 * `captured_from`
-* `uploaded_by`
-* `created_at`
-* `updated_at`
 
 Nilai `photo_role`:
 
 * `initial_evidence`
 * `resolution_evidence`
 
-Nilai `captured_from`:
+### `report_histories`
 
-* `camera`
-* `gallery`
-* `unknown`
+Menyimpan jejak perubahan status dan keputusan.
 
-### 3.8 `report_histories`
+Kolom penting:
 
-Menyimpan histori perubahan laporan.
-
-Kolom utama:
-
-* `id`
 * `report_id`
 * `user_id`
 * `from_status_id`
 * `to_status_id`
 * `action`
 * `note`
-* `created_at`
-* `updated_at`
 
-Contoh action yang sekarang dipakai:
+### `patrol_points`
 
-* `created`
-* `verified`
-* `clarification_requested`
-* `escalated`
-* `status_updated`
-* `completed`
-* `completed_internal`
+Menyimpan checkpoint patrol QR.
+
+Kolom penting:
+
+* `subak_id`
+* `created_by`
+* `point_code`
+* `name`
+* `point_type`
+* `description`
+* `latitude`
+* `longitude`
+* `reference_photo_path`
+* `qr_token`
+* `patrol_order`
+* `is_active`
+
+### `patrol_logs`
+
+Menyimpan hasil patroli harian per checkpoint.
+
+Kolom penting:
+
+* `patrol_point_id`
+* `user_id`
+* `subak_id`
+* `report_id`
+* `status`
+* `patrol_date`
+* `scanned_at`
+* `gps_latitude`
+* `gps_longitude`
+* `inspection_note`
 
 ---
 
-## 4. Relasi Antar Tabel
+## Relasi Antar Entitas
 
 * `roles` 1 --- n `users`
 * `subaks` 1 --- n `users`
 * `subaks` 1 --- n `reports`
+* `subaks` 1 --- n `patrol_points`
+* `subaks` 1 --- n `patrol_logs`
 * `categories` 1 --- n `reports`
 * `report_statuses` 1 --- n `reports`
 * `users` 1 --- n `reports` sebagai pelapor
 * `users` 1 --- n `reports` sebagai verifier melalui `verified_by`
 * `users` 1 --- n `reports` sebagai resolver melalui `resolved_by`
 * `reports` 1 --- n `report_photos`
-* `users` 1 --- n `report_photos` melalui `uploaded_by`
 * `reports` 1 --- n `report_histories`
+* `reports` 0..1 --- 1 `patrol_points` sebagai sumber laporan patrol QR
+* `reports` 0..1 --- n `patrol_logs` saat laporan berasal dari checkpoint rusak
+* `users` 1 --- n `report_photos`
 * `users` 1 --- n `report_histories`
-* `report_statuses` 1 --- n `report_histories` sebagai `from_status_id`
-* `report_statuses` 1 --- n `report_histories` sebagai `to_status_id`
+* `users` 1 --- n `patrol_points` sebagai pembuat checkpoint
+* `users` 1 --- n `patrol_logs` sebagai petugas patroli
+* `patrol_points` 1 --- n `patrol_logs`
+* `patrol_points` 1 --- n `reports`
 
 ---
 
-## 5. Relasi Eloquent yang Aktif
+## Aturan Data Penting
 
-### `User`
-
-* `belongsTo(Role::class)`
-* `belongsTo(Subak::class)`
-* `hasMany(Report::class)`
-* `hasMany(Report::class, 'verified_by')`
-* `hasMany(ReportPhoto::class, 'uploaded_by')`
-* `hasMany(ReportHistory::class)`
-
-### `Report`
-
-* `belongsTo(User::class)`
-* `belongsTo(Subak::class)`
-* `belongsTo(Category::class)`
-* `belongsTo(ReportStatus::class, 'status_id')`
-* `belongsTo(User::class, 'verified_by')`
-* `belongsTo(User::class, 'resolved_by')`
-* `hasMany(ReportPhoto::class)`
-* `hasMany(ReportHistory::class)`
-* `hasMany(ReportPhoto::class)` terfilter sebagai `initialPhotos`
-* `hasMany(ReportPhoto::class)` terfilter sebagai `resolutionPhotos`
-
-### `ReportPhoto`
-
-* `belongsTo(Report::class)`
-* `belongsTo(User::class, 'uploaded_by')`
-
-### `ReportHistory`
-
-* `belongsTo(Report::class)`
-* `belongsTo(User::class)`
-* `belongsTo(ReportStatus::class, 'from_status_id')`
-* `belongsTo(ReportStatus::class, 'to_status_id')`
+1. Setiap laporan wajib punya `latitude`, `longitude`, kategori, pelapor, dan status.
+2. Setiap laporan baru wajib punya minimal satu `initial_evidence`.
+3. Laporan dari QR menyimpan `patrol_point_id`.
+4. Jika laporan dibuat dari scan QR rusak, sistem juga membuat `patrol_logs` status `damaged`.
+5. `Selesai Internal` tetap dipetakan ke status `selesai`, bukan status tabel baru.
+6. `patrol_points` hanya relevan untuk role Pekaseh dan Pelapor patroli.
 
 ---
 
-## 6. Aturan Data Penting
+## Ringkasan Proses Data
 
-1. Semua laporan wajib punya:
-   * pelapor
-   * subak
-   * kategori
-   * status
-   * judul
-   * deskripsi
-   * latitude
-   * longitude
-
-2. Semua laporan baru otomatis memakai status `Menunggu Verifikasi`.
-
-3. Semua laporan wajib memiliki minimal satu `report_photo` dengan `photo_role = initial_evidence`.
-
-4. Laporan yang selesai idealnya memiliki:
-   * `resolution_note`
-   * `resolved_by`
-   * `resolved_at`
-   * minimal satu `resolution_evidence`
-
-5. `Selesai Internal` tidak disimpan sebagai status baru, melainkan sebagai:
-   * status akhir `selesai`
-   * histori action `completed_internal`
-
----
-
-## 7. Catatan Desain yang Relevan dengan Implementasi
-
-* Metadata bukti sekarang lebih kuat daripada versi awal karena menyimpan `file_hash` dan `captured_from`.
-* Struktur tetap sengaja hemat untuk MVP, sehingga belum ada tabel `report_resolutions` terpisah.
-* Belum ada tabel khusus eskalasi, komentar, atau viewer eksternal.
-* Belum ada representasi line/polyline untuk telabah.
-
----
-
-## 8. Kesimpulan
-
-ERD E-Matelik saat ini sudah mendukung alur:
-
-**pelapor membuat laporan -> Pekaseh memverifikasi -> admin memperbarui status -> sistem menyimpan histori dan bukti penyelesaian**
-
-Struktur ini sudah cukup untuk:
-
-* role-based workflow,
-* closed-loop evidence,
-* privacy-aware reporting,
-* KPI proses sederhana,
-* dan demo MVP yang defensible.
+**Pekaseh membuat `patrol_points` -> Pelapor membuat `patrol_logs` dari scan -> jika rusak, Pelapor membuat `reports` yang tertaut ke `patrol_point_id` -> foto masuk ke `report_photos` -> keputusan proses masuk ke `report_histories`**

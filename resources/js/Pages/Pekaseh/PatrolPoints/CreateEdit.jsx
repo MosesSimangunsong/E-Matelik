@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -10,6 +10,8 @@ import 'leaflet/dist/leaflet.css';
 
 export default function CreateEdit({ auth, patrolPoint }) {
     const isEdit = !!patrolPoint;
+    const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+    const [locationError, setLocationError] = useState('');
     
     const { data, setData, post, put, processing, errors } = useForm({
         point_code: patrolPoint?.point_code || '',
@@ -24,6 +26,7 @@ export default function CreateEdit({ auth, patrolPoint }) {
     const mapRef = useRef(null);
     const mapInstance = useRef(null);
     const markerInstance = useRef(null);
+    const markerIconRef = useRef(null);
 
     useEffect(() => {
         // Inisialisasi Peta hanya jika belum ada
@@ -46,6 +49,7 @@ export default function CreateEdit({ auth, patrolPoint }) {
                 iconSize: [25, 41],
                 iconAnchor: [12, 41]
             });
+            markerIconRef.current = icon;
 
             // Pasang marker jika sudah ada koordinat (misal saat Edit)
             if (data.latitude && data.longitude) {
@@ -57,6 +61,7 @@ export default function CreateEdit({ auth, patrolPoint }) {
                 const { lat, lng } = e.latlng;
                 const formattedLat = lat.toFixed(7);
                 const formattedLng = lng.toFixed(7);
+                setLocationError('');
 
                 // Update state form Inertia
                 setData((prev) => ({
@@ -89,6 +94,63 @@ export default function CreateEdit({ auth, patrolPoint }) {
             markerInstance.current.setLatLng([data.latitude, data.longitude]);
         }
     }, [data.latitude, data.longitude]);
+
+    const useCurrentLocation = () => {
+        if (!('geolocation' in navigator)) {
+            setLocationError('Browser Anda tidak mendukung geolocation. Pilih titik manual di peta.');
+            return;
+        }
+
+        setIsFetchingLocation(true);
+        setLocationError('');
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const latitude = position.coords.latitude.toFixed(7);
+                const longitude = position.coords.longitude.toFixed(7);
+
+                setData((prev) => ({
+                    ...prev,
+                    latitude,
+                    longitude,
+                }));
+
+                if (mapInstance.current) {
+                    const latLng = [Number(latitude), Number(longitude)];
+                    mapInstance.current.setView(latLng, 17, { animate: true });
+
+                    if (markerInstance.current) {
+                        markerInstance.current.setLatLng(latLng);
+                    } else if (markerIconRef.current) {
+                        markerInstance.current = L.marker(latLng, {
+                            icon: markerIconRef.current,
+                        }).addTo(mapInstance.current);
+                    }
+                }
+
+                setIsFetchingLocation(false);
+            },
+            (error) => {
+                let message = 'Lokasi saat ini gagal diambil. Silakan coba lagi atau pilih titik manual di peta.';
+
+                if (error.code === error.PERMISSION_DENIED) {
+                    message = 'Izin lokasi ditolak. Aktifkan akses lokasi browser lalu coba lagi.';
+                } else if (error.code === error.TIMEOUT) {
+                    message = 'Pengambilan lokasi melebihi batas waktu 10 detik. Pastikan GPS aktif lalu coba lagi.';
+                } else if (error.code === error.POSITION_UNAVAILABLE) {
+                    message = 'Lokasi tidak tersedia saat ini. Coba pindah ke area dengan sinyal lokasi yang lebih baik.';
+                }
+
+                setLocationError(message);
+                setIsFetchingLocation(false);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0,
+            }
+        );
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -182,6 +244,24 @@ export default function CreateEdit({ auth, patrolPoint }) {
                                 <div className="space-y-4">
                                     <InputLabel value="Tentukan Lokasi di Peta (Klik pada Peta)" />
                                     <p className="text-xs text-gray-500 mb-2">Geser dan klik pada area peta untuk mengatur koordinat secara otomatis.</p>
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                                        <button
+                                            type="button"
+                                            onClick={useCurrentLocation}
+                                            disabled={isFetchingLocation}
+                                            className="inline-flex items-center justify-center rounded-md border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                        >
+                                            {isFetchingLocation ? 'Mengambil lokasi...' : 'Gunakan Lokasi Saat Ini'}
+                                        </button>
+                                        <p className="text-xs text-gray-500">
+                                            Lokasi perangkat akan mengisi koordinat dan memindahkan marker.
+                                        </p>
+                                    </div>
+                                    {locationError && (
+                                        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                                            {locationError}
+                                        </div>
+                                    )}
                                     
                                     {/* Kontainer Peta Leaflet */}
                                     <div 

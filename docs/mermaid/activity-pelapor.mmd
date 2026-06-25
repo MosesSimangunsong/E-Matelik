@@ -1,0 +1,31 @@
+flowchart TD
+    A([Mulai]) --> B[Pelapor login]
+    B --> C[Masuk dashboard patroli]
+    C --> D{Pilih alur}
+
+    D -->|Patroli QR| E[Klik Scan QR Patroli]
+    E --> F[Browser meminta izin kamera]
+    F --> G{QR valid?}
+    G -->|Tidak| H[Tampilkan pesan QR tidak dikenali]
+    H --> Z([Selesai])
+    G -->|Ya| I[Buka halaman inspeksi checkpoint]
+    I --> J[Ambil GPS perangkat]
+    J --> K{Kondisi titik}
+    K -->|Aman| L[Simpan patrol log status safe]
+    K -->|Perlu Perhatian| M[Simpan patrol log status needs_attention]
+    K -->|Rusak| N[Buka form laporan dengan prefill QR]
+    N --> O[Isi judul, kategori, deskripsi, foto]
+    O --> P[Simpan laporan]
+    P --> Q[Buat patrol log status damaged]
+    L --> Z
+    M --> Z
+    Q --> Z
+
+    D -->|Laporan Manual| R[Buka form laporan]
+    R --> S[Pilih titik di peta atau gunakan lokasi saat ini]
+    S --> T[Unggah foto bukti]
+    T --> U[Submit laporan]
+    U --> V[Sistem menyimpan report status menunggu-verifikasi]
+    V --> W[Pelapor membuka detail laporan]
+    W --> X[Lihat bukti, status, histori]
+    X --> Z

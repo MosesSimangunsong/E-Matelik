@@ -8,8 +8,8 @@ export default function GuestLayout({ children }) {
                 <section className="overflow-hidden rounded-[28px] border border-emerald-100 bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-600 p-6 text-white shadow-soft sm:p-8 lg:flex lg:min-h-[620px] lg:flex-col lg:justify-between lg:p-10">
                     <div className="space-y-6">
                         <Link href="/" className="inline-flex items-center gap-4">
-                            <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/12 backdrop-blur">
-                                <ApplicationLogo className="h-10 w-10 fill-current text-white" />
+                            <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white backdrop-blur">
+                                <ApplicationLogo className="h-11 w-11 object-contain" />
                             </span>
                             <div>
                                 <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-100">
@@ -51,8 +51,8 @@ export default function GuestLayout({ children }) {
                 <section className="flex items-center">
                     <div className="w-full app-panel px-5 py-6 sm:px-8 sm:py-10">
                         <div className="mb-8 flex items-center gap-4 lg:hidden">
-                            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-500 text-white shadow-panel">
-                                <ApplicationLogo className="h-8 w-8 fill-current" />
+                            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-panel">
+                                <ApplicationLogo className="h-9 w-9 object-contain" />
                             </span>
                             <div>
                                 <p className="text-lg font-bold text-neutral-900">E-Matelik</p>
