@@ -25,7 +25,29 @@
     }
 
     html {
-        @apply scroll-smooth;
+        /* Memberikan efek transisi halus saat menavigasi halaman */
+        scroll-behavior: smooth;
+        /* Memaksa browser merender teks setajam mungkin (ala Apple/Vercel) */
+        text-rendering: optimizeLegibility;
+    }
+
+    /* Kustomisasi Scrollbar agar tidak terlihat kaku/default */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #e4e4e7; /* Warna zinc-200 yang lembut */
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #d4d4d8; /* Warna zinc-300 saat di-hover */
     }
 
     html,
